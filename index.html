@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<!-- GEO 可见度判定助手 · MIT · https://github.com/jiguang9/geo-judge · 在线版 https://aimarketinglift.com/tools/geo-judge -->
+<html lang="zh-CN">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="https://aimarketinglift.com/assets/images/favicon.svg">
+<title>GEO 可见度判定助手 - 免费测试品牌在 ChatGPT/Claude/Perplexity/Google AI概览/DeepSeek/豆包 中的提及表现 | AI Marketing Lift</title>
+<meta name="description" content="如何测试品牌在 AI 搜索中的可见度？把 ChatGPT、Claude、Perplexity、Google AI概览、DeepSeek、豆包 的回答粘贴进来，自动判定品牌是否被提及、提及位置、引用 URL 和竞品排序，测试记录本地保存并自动生成汇总记分卡、行动建议与引用来源情报。">
+<meta property="og:title" content="GEO 可见度判定助手 · AI Marketing Lift">
+<meta property="og:description" content="批量粘贴 AI 回答，自动判定品牌提及、提及位置、引用 URL 与竞品排序，本地累积测试记录并生成记分卡与行动建议，结果一键导出 Excel/CSV。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://aimarketinglift.com/tools/geo-judge">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://aimarketinglift.com/assets/images/og-image.png">
+<meta name="twitter:image" content="https://aimarketinglift.com/assets/images/og-image.png">
+<link rel="canonical" href="https://aimarketinglift.com/tools/geo-judge">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF7F2;--s1:#FFFFFF;--s2:#F4EFE8;--s3:#EBE4D9;
+  --ink:#1A1410;--ink2:#5A4A38;--muted:rgba(26,20,16,.42);
+  --bd:rgba(26,20,16,.1);--bd2:rgba(26,20,16,.06);
+  --amber:#C07820;--al:#FEF3DC;--ad:#8B5410;--am:#F5D898;
+  --sage:#4A7C59;--sl:#E8F4EC;--sd:#2E5038;
+  --red:#C94040;--rl:#FAEBEB;--rd:#8B2020;
+  --dark:#1E0F04;
+  --pass:#4A7C59;--partial:#C07820;--fail:#C94040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.6}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;height:60px;padding:0 40px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:rgba(250,247,242,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-name{font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;color:var(--ink);letter-spacing:-.2px;white-space:nowrap}
+.nav-links{display:flex;gap:2px;align-items:center}
+.nl{font-size:13px;color:var(--ink2);padding:5px 10px;border-radius:7px;text-decoration:none;transition:all .12s}
+.nl:hover,.nl.active{background:var(--s2);color:var(--ink)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.nav-login{font-size:12px;color:var(--muted);text-decoration:none;padding:6px 10px;transition:color .12s}
+.nav-login:hover{color:var(--ink)}
+.nav-try{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;padding:8px 16px;border-radius:20px;background:var(--amber);color:#fff;text-decoration:none;transition:background .15s}
+.nav-try:hover{background:var(--ad)}
+.nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;
+  padding:6px;background:none;border:none;cursor:pointer;border-radius:8px;transition:background .12s}
+.nav-burger:hover{background:var(--s2)}
+.nav-burger span{display:block;width:20px;height:2px;background:var(--ink);border-radius:2px;transition:transform .22s,opacity .22s}
+.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-burger.open span:nth-child(2){opacity:0}
+.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-resources{position:relative}
+.nav-resources-btn{display:inline-flex;align-items:center;gap:4px;font:inherit;background:none;border:none;cursor:pointer}
+.nav-caret{flex-shrink:0;opacity:.7;transition:transform .18s ease}
+.nav-resources-btn[aria-expanded="true"] .nav-caret{transform:rotate(180deg)}
+.nav-dropdown{display:none;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);width:272px;background:var(--s1);border:1px solid var(--bd);border-radius:8px;box-shadow:0 14px 34px rgba(26,20,16,.16);padding:8px;z-index:130}
+.nav-dropdown.open{display:block}
+.nav-dropdown-item{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-radius:5px;text-decoration:none;transition:background .12s}
+.nav-dropdown-item:hover,.nav-dropdown-item:focus-visible{background:var(--al);outline:none}
+.ndi-title{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:.01em}
+.ndi-desc{font-size:10.5px;color:var(--muted);line-height:1.4}
+.nav-dropdown-item.active .ndi-title{color:var(--amber)}
+.nav-drawer{display:none;position:fixed;top:60px;left:0;right:0;z-index:99;
+  background:rgba(250,247,242,.98);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--bd);padding:6px 20px 16px;box-shadow:0 8px 24px rgba(26,20,16,.08)}
+.nav-drawer.open{display:flex;flex-direction:column}
+.nav-drawer a.nl{font-size:15px;padding:13px 4px;border-bottom:1px solid var(--bd2);border-radius:0;display:block}
+.nav-drawer a.nl:last-of-type{border-bottom:none}
+.nav-drawer-group{margin:2px 0}
+.nav-drawer-group-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:14px 4px 6px}
+.nav-drawer a.nl.nav-drawer-sub{padding-left:20px;font-size:13.5px;color:var(--ink2)}
+.nav-drawer a.nl.nav-drawer-sub.active{color:var(--amber)}
+.nav-drawer-footer{margin-top:12px;padding-top:12px;border-top:1px solid var(--bd2)}
+.nav-drawer-login{display:block;font-size:13px;color:var(--muted);text-decoration:none;padding:10px 4px}
+@media(max-width:900px){.nav{padding:0 20px}.nav-links{display:none}.nav-login{display:none}.nav-burger{display:flex}}
+
+.page{padding:80px 16px 60px;max-width:900px;margin:0 auto}
+
+/* HERO */
+.hero{text-align:center;padding:32px 0 40px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);background:var(--al);padding:4px 12px;border-radius:20px;margin-bottom:16px}
+.engine-badges-lead{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:14px}
+.engine-badges{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin-bottom:22px}
+.engine-badge{display:inline-flex;align-items:center;gap:9px;font-size:15px;font-weight:800;color:var(--ink);background:var(--s1);border:1.5px solid var(--bd);padding:10px 20px 10px 12px;border-radius:28px;box-shadow:0 1px 2px rgba(28,14,6,.05),0 8px 20px rgba(28,14,6,.07);transition:transform .15s,box-shadow .15s,border-color .15s}
+.engine-badge:hover{transform:translateY(-2px);border-color:var(--amber);box-shadow:0 4px 10px rgba(28,14,6,.08),0 14px 28px rgba(28,14,6,.1)}
+.engine-badge img{width:24px;height:24px;border-radius:6px;flex-shrink:0;display:block}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:800;color:var(--ink);letter-spacing:-.8px;line-height:1.15;margin-bottom:12px}
+.hero p{font-size:15px;color:var(--ink2);max-width:600px;margin:0 auto;line-height:1.75}
+
+/* INTRO / DEFINITION-LEAD */
+.intro-box{background:var(--s1);border:1.5px solid var(--bd);border-radius:16px;padding:24px 28px;margin-bottom:24px}
+.intro-lead{font-size:14.5px;color:var(--ink2);line-height:1.85;margin-bottom:18px}
+.intro-lead strong{color:var(--ink)}
+.intro-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+@media(max-width:680px){.intro-steps{grid-template-columns:1fr}}
+.intro-step{background:var(--s2);border-radius:10px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start}
+.intro-step-num{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--amber);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.intro-step-text{font-size:13px;color:var(--ink2);line-height:1.6}
+.intro-step-text strong{color:var(--ink);display:block;font-size:13.5px;margin-bottom:2px}
+.intro-privacy{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.intro-note{font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px}
+
+/* FAQ engine list — replaces one dense paragraph with a scannable per-engine list */
+.faq-engine-wrap{padding:0 0 16px 22px}
+.faq-engine-list{display:flex;flex-direction:column}
+.faq-engine-row{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--bd2)}
+.faq-engine-row:first-child{padding-top:0}
+.faq-engine-row:last-of-type{border-bottom:none}
+.faq-engine-logo{width:22px;height:22px;border-radius:5px;flex-shrink:0;margin-top:2px}
+.faq-engine-body{flex:1;min-width:0}
+.faq-engine-name{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.faq-engine-text{font-size:12.5px;color:var(--ink2);line-height:1.65}
+.faq-engine-text b{color:var(--ink)}
+.faq-engine-note{font-size:12px;color:var(--muted);line-height:1.7;margin-top:12px}
+.faq-status-icon{width:22px;flex-shrink:0;text-align:center;font-size:15px;margin-top:1px}
+
+/* VALUE BOX — what the tool does / why it matters, above the how-to card */
+.value-box{background:var(--s2);border:1.5px solid var(--bd);border-radius:16px;padding:24px 28px;margin-bottom:22px}
+.value-eyebrow{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:10px}
+.value-lead{font-size:14.5px;color:var(--ink2);line-height:1.85;margin-bottom:18px}
+.value-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (max-width:900px){.value-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.value-grid{grid-template-columns:1fr}}
+.value-card{background:var(--s1);border-radius:10px;padding:16px}
+.value-icon{font-size:20px;margin-bottom:8px;line-height:1}
+.value-title{font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.value-desc{font-size:12.5px;color:var(--ink2);line-height:1.7}
+
+/* TOOL CARDS (restyled from source tool, JS-referenced ids/classes unchanged) */
+.card {
+  background: var(--s1); border: 1.5px solid var(--bd); border-radius: 14px;
+  padding: 22px 24px; margin-bottom: 22px;
+}
+/* Insight cards (results/scorecard/advice/sources) get soft-shadow elevation instead of a flat
+   border, so the "here's what you get" zone reads visually distinct from the input-form cards above it. */
+.card-insight { border: none; box-shadow: 0 1px 2px rgba(28,14,6,.05), 0 10px 28px rgba(28,14,6,.08); }
+.card-empty { padding: 6px 2px 2px; color: var(--muted); font-size: 13px; line-height: 1.85; }
+.zone-label { display: flex; align-items: center; gap: 10px; margin: 6px 0 16px; }
+.zone-label::before { content: ''; width: 22px; height: 1px; background: var(--amber); flex-shrink: 0; }
+.zone-label span { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--amber); }
+.card h2 {
+  font-family:'Syne',sans-serif; font-size: 14px; color: var(--ink); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px; font-weight: 700;
+}
+.card h2 .step {
+  background: var(--amber); color: #fff; border-radius: 50%;
+  width: 20px; height: 20px; font-size: 11px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 5px; font-weight: 500; }
+input[type=text], textarea, select {
+  width: 100%; border: 1.5px solid var(--bd); border-radius: 8px;
+  padding: 9px 12px; font-size: 13px; font-family: inherit; color: var(--ink); background: var(--bg);
+  outline: none; transition: border-color .15s;
+}
+input[type=text]:focus, textarea:focus, select:focus { border-color: var(--amber); }
+textarea { resize: vertical; line-height: 1.6; }
+.cfg-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+@media (max-width: 900px) { .cfg-grid { grid-template-columns: 1fr; } }
+
+/* ENGINE SELECT (custom dropdown with logos; native <select> can't show images in options) */
+.engine-select { position: relative; }
+.engine-select-btn {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  border: 1.5px solid var(--bd); border-radius: 8px; padding: 9px 12px;
+  background: var(--bg); cursor: pointer; font: inherit; font-size: 13px; color: var(--ink);
+  text-align: left; transition: border-color .15s;
+}
+.engine-select-btn:hover, .engine-select-btn[aria-expanded="true"] { border-color: var(--amber); }
+.engine-select-btn span { flex: 1; }
+.es-logo { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; display: block; }
+.es-caret { flex-shrink: 0; opacity: .6; transition: transform .15s; }
+.engine-select-btn[aria-expanded="true"] .es-caret { transform: rotate(180deg); }
+.engine-select-menu {
+  list-style: none; margin: 0; position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  background: var(--s1); border: 1px solid var(--bd); border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(26,20,16,.16); padding: 6px; z-index: 20;
+  max-height: 300px; overflow-y: auto; display: none;
+}
+.engine-select-menu.open { display: block; }
+.es-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink); }
+.es-item:hover, .es-item[aria-selected="true"] { background: var(--al); }
+
+
+#singleAnswer { min-height: 200px; font-size: 13px; }
+.fmt {
+  background: var(--s2); border-radius: 8px; padding: 10px 14px;
+  font-size: 12px; color: var(--ink2); margin-bottom: 12px; line-height: 1.7;
+}
+.fmt code { font-family: 'DM Mono', Consolas, monospace; background: var(--s1); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--bd); }
+
+/* ENGINE-SPECIFIC PASTE TIP (toggles with #engine) */
+.engine-tip { background: var(--al); border: 1px solid var(--am); border-radius: 10px; padding: 13px 15px; margin: 12px 0 4px; }
+.engine-tip .et-head { font-family:'Syne',sans-serif; font-size: 12.5px; font-weight: 700; color: var(--ad); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.engine-tip .et-step { display: flex; gap: 9px; align-items: flex-start; margin-top: 8px; font-size: 13px; color: var(--ink2); line-height: 1.6; }
+.engine-tip .et-step:first-of-type { margin-top: 0; }
+.engine-tip .et-num { flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; background: var(--amber); color: #fff; font-size: 11px; font-weight: 700; font-family:'DM Sans',sans-serif; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.engine-tip .et-step b { color: var(--ink); }
+.engine-tip .et-opt { color: var(--muted); font-weight: 700; }
+.engine-tip code { font-family: 'DM Mono', Consolas, monospace; background: var(--s1); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--bd); font-size: 12px; }
+
+.btn {
+  background: var(--amber); color: #fff; border: none; border-radius: 8px;
+  padding: 10px 20px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: 'Syne',sans-serif;
+  transition: all .15s;
+}
+.btn:hover { background: var(--ad); box-shadow: 0 4px 14px rgba(192,120,32,.25); }
+.btn.secondary { background: var(--s1); color: var(--amber); border: 1.5px solid var(--amber); }
+.btn.secondary:hover { background: var(--al); box-shadow: none; }
+.btn.small { padding: 6px 12px; font-size: 12px; }
+.btn.danger { background: var(--s1); color: var(--rd); border: 1.5px solid var(--red); }
+.btn.danger:hover { background: var(--rl); box-shadow: none; }
+.actions { margin: 16px 0 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.hint { font-size: 12px; color: var(--muted); }
+.row3 { display: flex; gap: 12px; }
+.row3 > div { flex: 1; }
+@media (max-width: 560px) { .row3 { flex-direction: column; } }
+
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { border: 1px solid var(--bd); padding: 7px 9px; text-align: left; vertical-align: top; }
+th { background: var(--s2); position: sticky; top: 0; font-family:'Syne',sans-serif; font-weight: 700; font-size: 11px; color: var(--ink2); }
+td.yes { color: var(--sage); font-weight: 700; }
+td.no { color: var(--red); }
+.queue-wrap { max-height: 420px; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; border: 1px solid var(--bd); }
+#qTable { min-width: 1180px; }
+#qTable td { overflow-wrap: break-word; word-break: break-word; }
+#qTable td.qt-trunc { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* SCORECARD / ADVICE / SOURCES / MATRIX */
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+@media (max-width:680px){.metric-grid{grid-template-columns:repeat(2,1fr)}}
+.metric-tile{background:var(--s2);border-radius:10px;padding:14px 16px}
+.metric-label{font-size:11.5px;color:var(--muted);margin-bottom:6px;line-height:1.4}
+.metric-value{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--amber)}
+.metric-note{font-size:11px;color:var(--muted);margin-top:4px}
+.sov-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin:18px 0 10px}
+.sov-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:12.5px}
+.sov-name{width:120px;flex-shrink:0;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sov-name.sov-brand{color:var(--ink);font-weight:700}
+.sov-bar-wrap{flex:1;background:var(--s2);border-radius:6px;height:10px;overflow:hidden}
+.sov-bar{height:100%;background:var(--s3);border-radius:6px}
+.sov-bar.sov-bar-brand{background:var(--amber)}
+.sov-pct{width:44px;flex-shrink:0;text-align:right;color:var(--ink2)}
+.pos-summary{font-size:13px;color:var(--ink2);line-height:1.8}
+.advice-item{border-left:3px solid var(--amber);background:var(--s2);border-radius:0 10px 10px 0;padding:14px 16px;margin-bottom:12px}
+.advice-title{font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.advice-diag{font-size:12.5px;color:var(--ink2);line-height:1.7;margin-bottom:8px}
+.advice-actions{margin:0 0 10px 18px;font-size:12.5px;color:var(--ink2);line-height:1.8}
+.advice-links{display:flex;flex-wrap:wrap;gap:8px}
+.advice-link{font-size:11.5px;font-weight:700;color:var(--amber);background:var(--al);border-radius:14px;padding:4px 12px;text-decoration:none}
+.advice-link:hover{background:var(--am)}
+.src-badge{display:inline-block;font-size:10px;font-weight:700;padding:1px 8px;border-radius:10px;margin-left:6px}
+.src-badge-brand{background:var(--al);color:var(--ad)}
+.src-badge-comp{background:var(--rl);color:var(--rd)}
+.src-badge-third{background:var(--s2);color:var(--ink2)}
+.mx-q{font-weight:600;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.mx-untested{background:none;border:1px dashed var(--bd);border-radius:6px;color:var(--muted);font-size:11px;padding:4px 8px;cursor:pointer;font-family:inherit}
+.mx-untested:hover{border-color:var(--amber);color:var(--amber)}
+.mx-tested{background:none;border:1px solid var(--bd);border-radius:6px;font-size:14px;padding:3px 8px;cursor:pointer;font-family:inherit}
+.mx-tested:hover{border-color:var(--amber)}
+.mx-src-filter{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);margin-bottom:10px}
+
+/* RESULT CARD — big, plain-language, one glance */
+.result-banner { display: flex; align-items: center; gap: 16px; padding: 20px 22px; border-radius: 14px; border: 1.5px solid var(--bd); }
+.result-banner .rb-icon { font-size: 34px; line-height: 1; flex-shrink: 0; }
+.result-banner .rb-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--ink); letter-spacing: -.3px; margin-bottom: 3px; }
+.result-banner .rb-desc { font-size: 13px; color: var(--ink2); line-height: 1.6; }
+.st-yes  { background: var(--sl); border-color: var(--sage); }
+.st-yes  .rb-title { color: var(--sd); }
+.st-cite { background: var(--al); border-color: var(--am); }
+.st-cite .rb-title { color: var(--ad); }
+.st-ret  { background: #EAF0F6; border-color: #A9C2DA; }
+.st-ret  .rb-title { color: #2A5578; }
+.st-no   { background: var(--rl); border-color: var(--red); }
+.st-no   .rb-title { color: var(--rd); }
+.st-na   { background: var(--s2); border-color: var(--bd); }
+.st-na   .rb-title { color: var(--ink2); }
+.result-rows { margin-top: 16px; display: flex; flex-direction: column; gap: 0; }
+.result-rows .rr { display: flex; gap: 14px; padding: 11px 4px; border-bottom: 1px solid var(--bd2); font-size: 13.5px; }
+.result-rows .rr:last-child { border-bottom: none; }
+.result-rows .rr-k { flex-shrink: 0; width: 110px; color: var(--muted); font-weight: 500; }
+.result-rows .rr-v { color: var(--ink); line-height: 1.7; word-break: break-word; }
+.count-pill {
+  background: var(--amber); color: #fff; border-radius: 12px; font-size: 12px;
+  padding: 1px 10px; margin-left: 6px; font-family:'DM Sans',sans-serif; font-weight: 700;
+}
+details { margin-top: 6px; }
+details summary { cursor: pointer; font-size: 12px; color: var(--amber); font-weight: 600; }
+.preview {
+  border: 1px solid var(--bd); border-radius: 8px; padding: 10px;
+  max-height: 200px; overflow-y: auto; font-size: 12px; white-space: pre-wrap;
+  background: var(--bg); margin-top: 6px; line-height: 1.7;
+}
+.preview mark.brand { background: var(--am); padding: 0 2px; font-weight: 700; border-radius: 2px; }
+.preview mark.comp { background: var(--rl); color: var(--rd); padding: 0 2px; border-radius: 2px; }
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--dark); color: #fff; padding: 10px 22px; border-radius: 20px;
+  font-size: 13px; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 200;
+  font-family:'DM Sans',sans-serif;
+}
+.toast.show { opacity: 1; }
+
+/* CONVERSION MODULES */
+.faq-sec{margin-top:32px}
+.faq-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:14px}
+.faq-item{background:var(--s1);border:1.5px solid var(--bd);border-radius:12px;padding:4px 18px;margin-bottom:10px}
+.faq-item summary{cursor:pointer;font-size:13.5px;font-weight:700;color:var(--ink);padding:14px 0;list-style:none}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::before{content:'+';color:var(--amber);font-weight:800;margin-right:10px;display:inline-block;width:12px}
+.faq-item[open] summary::before{content:'–'}
+.faq-item p{font-size:13px;color:var(--ink2);line-height:1.8;padding:0 0 16px 22px}
+.convert-wrap{display:grid;grid-template-columns:1fr;gap:16px;margin-top:32px}
+.crosslink-card{background:var(--s1);border:1.5px solid var(--bd);border-radius:14px;padding:22px 24px;display:flex;align-items:center;gap:18px;text-decoration:none;color:inherit;transition:all .15s}
+.crosslink-card:hover{border-color:var(--amber);box-shadow:0 8px 24px rgba(192,120,32,.1);transform:translateY(-1px)}
+.crosslink-icon{width:44px;height:44px;background:var(--al);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.crosslink-body{flex:1}
+.crosslink-title{font-family:'Syne',sans-serif;font-size:14.5px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.crosslink-desc{font-size:12.5px;color:var(--ink2);line-height:1.6}
+.crosslink-arrow{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--amber);flex-shrink:0}
+
+.consult-cta{background:var(--dark);border-radius:14px;padding:32px 28px;position:relative;overflow:hidden}
+.consult-cta::before{content:'CONSULTING';position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-family:'Syne',sans-serif;font-size:80px;font-weight:800;letter-spacing:-3px;color:rgba(255,255,255,.03);pointer-events:none;user-select:none}
+.consult-cta-eyebrow{display:flex;align-items:center;gap:10px;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px;position:relative;z-index:1}
+.consult-cta-eyebrow::before{content:'';width:22px;height:1px;background:var(--amber)}
+.consult-cta-h{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:#fff;letter-spacing:-.4px;margin-bottom:10px;position:relative;z-index:1}
+.consult-cta-p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.75;max-width:480px;margin-bottom:18px;position:relative;z-index:1}
+.consult-cta-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;background:var(--amber);color:#fff;font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;text-decoration:none;letter-spacing:.03em;transition:background .15s;position:relative;z-index:1}
+.consult-cta-btn:hover{background:var(--ad)}
+
+/* FOOTER */
+.footer-strip{text-align:center;padding:24px;font-size:12px;color:var(--muted);margin-top:20px}
+.footer-strip a{color:var(--amber);text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a class="nav-logo" href="https://aimarketinglift.com/tools/geo-judge">
+    <img src="https://aimarketinglift.com/assets/images/favicon.svg" width="26" height="26" alt="" style="border-radius:2px">
+    <span class="nav-name">GEO 可见度判定助手</span>
+  </a>
+  <div class="nav-r">
+    <a class="nav-login" href="https://github.com/jiguang9/geo-judge">GitHub</a>
+    <a class="nav-try" href="https://aimarketinglift.com/tools/geo-judge">在线版</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <span class="engine-badges-lead">🔍 免费工具 · 支持 6 大 AI 引擎</span>
+    <div class="engine-badges">
+      <span class="engine-badge"><img src="https://aimarketinglift.com/assets/images/engine-logos/chatgpt.png" alt="">ChatGPT</span>
+      <span class="engine-badge"><img src="https://aimarketinglift.com/assets/images/engine-logos/claude.png" alt="">Claude</span>
+      <span class="engine-badge"><img src="https://aimarketinglift.com/assets/images/engine-logos/perplexity.svg" alt="">Perplexity</span>
+      <span class="engine-badge"><img src="https://aimarketinglift.com/assets/images/engine-logos/google.svg" alt="">Google AI概览</span>
+      <span class="engine-badge"><img src="https://aimarketinglift.com/assets/images/engine-logos/deepseek.svg" alt="">DeepSeek</span>
+      <span class="engine-badge"><img src="https://aimarketinglift.com/assets/images/engine-logos/doubao.png" alt="">豆包</span>
+    </div>
+    <h1>GEO 可见度判定助手</h1>
+    <p>把 ChatGPT、Claude、Perplexity、Google AI概览、DeepSeek 或豆包 的一条回答粘进来，一键看清：你的品牌有没有被提及、排第几、竞品是谁、有没有被引用。</p>
+  </div>
+
+  <div class="value-box">
+    <span class="value-eyebrow">这个工具能帮你做什么</span>
+    <p class="value-lead">单条测试只能回答"有没有出现"。测过几条之后，工具会自动汇总成能落地的结论：</p>
+    <div class="value-grid">
+      <div class="value-card">
+        <div class="value-icon">📊</div>
+        <div class="value-title">汇总记分卡</div>
+        <div class="value-desc">可见率、SOV、平均位次、引擎覆盖矩阵，看清品牌在 AI 搜索里的真实位置。</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🧭</div>
+        <div class="value-title">行动建议</div>
+        <div class="value-desc">自动诊断问题出在抓取、内容还是引用排名，给出具体动作和打法文章。</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🔗</div>
+        <div class="value-title">引用来源情报</div>
+        <div class="value-desc">汇总 AI 实际引用过的第三方域名并按频次排序，就是一份铺内容的渠道清单。</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🗂️</div>
+        <div class="value-title">测试计划矩阵</div>
+        <div class="value-desc">提前列出客户会问的问题，生成问题 × 引擎矩阵，凑够样本量再下结论。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="intro-box">
+    <p class="intro-lead">在任意一个 AI 引擎里，问一个跟你行业相关的问题（比如"XX 工具哪家好用"），把回答整段复制进来即可。</p>
+    <div class="intro-steps">
+      <div class="intro-step"><div class="intro-step-num">1</div><div class="intro-step-text"><strong>填品牌和竞品</strong>一个品牌填一次即可</div></div>
+      <div class="intro-step"><div class="intro-step-num">2</div><div class="intro-step-text"><strong>选引擎·粘贴回答</strong>ChatGPT / Claude / Perplexity / Google AI概览 / DeepSeek / 豆包 整段粘进来</div></div>
+      <div class="intro-step"><div class="intro-step-num">3</div><div class="intro-step-text"><strong>看汇总记分卡</strong>测几条后自动出可见率、SOV、行动建议</div></div>
+    </div>
+    <div class="intro-privacy">🔒 纯前端本地处理，不上传任何服务器；测试记录跨会话累积存在本机浏览器（localStorage），可随时一键清空</div>
+    <div class="intro-note">当前支持 ChatGPT、Claude、Perplexity、Google AI概览、DeepSeek、豆包 六个引擎，其它大模型与批量模式后续逐步加入。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="step">1</span>填品牌和竞品（每个品牌填一次）</h2>
+    <div class="cfg-grid">
+      <div>
+        <label>你的品牌名（多个叫法用逗号隔开）</label>
+        <input type="text" id="brand" placeholder="Anker, 安克, Anker Innovations">
+      </div>
+      <div>
+        <label>你的官网域名（用来识别"被引用"）</label>
+        <input type="text" id="brandDomain" placeholder="anker.com">
+      </div>
+      <div>
+        <label>竞品名（逗号隔开；同一竞品多个叫法用 | 隔开）</label>
+        <input type="text" id="competitors" placeholder="Monday.com|monday|周一, 飞书|Feishu|Lark">
+      </div>
+    </div>
+    <div class="fmt" style="margin-top:12px;margin-bottom:0">匹配自动忽略大小写、全角/半角、网址里的 <code>http://</code> 和 <code>www.</code>，括号注释（如 <code>飞书（Feishu）</code>）也会自动拆开。原文怎么写仍原样保留，不改动。</div>
+  </div>
+
+  <div class="card" id="planCard">
+    <h2><span class="step">2</span>列出客户会问的问题（选填，建议 5-10 个）</h2>
+    <label>一行一个问题</label>
+    <textarea id="qList" placeholder="项目管理工具哪家好用&#10;跨境电商建站工具推荐&#10;……" style="min-height:100px" onchange="saveQuestions()"></textarea>
+    <div class="actions" style="margin-top:10px">
+      <button class="btn secondary small" onclick="saveQuestions()">保存问题清单</button>
+      <span class="hint">保存后下方会生成「问题 × 引擎」测试矩阵，点未测格子可直接跳到 Step 3 开始测试，凑够样本量再看汇总记分卡。测试顺序不用和清单一致，记录按 Step 3 里填的问题原话对上清单（空格和标点不影响）。</span>
+    </div>
+    <div id="testMatrixWrap"></div>
+  </div>
+
+  <div class="card" id="stepPaste">
+    <h2><span class="step">3</span>选引擎 · 填问题 · 粘贴回答</h2>
+    <label>先选这条回答来自哪个 AI 引擎</label>
+    <div class="engine-select" id="engineSelectWrap">
+      <button type="button" class="engine-select-btn" id="engineSelectBtn" aria-haspopup="listbox" aria-expanded="false">
+        <img class="es-logo" id="engineSelectBtnLogo" src="https://aimarketinglift.com/assets/images/engine-logos/chatgpt.png" alt="">
+        <span id="engineSelectBtnLabel">ChatGPT</span>
+        <svg class="es-caret" width="9" height="6" viewBox="0 0 9 6" fill="none" aria-hidden="true"><path d="M1 1l3.5 3.5L8 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <ul class="engine-select-menu" id="engineSelectMenu" role="listbox">
+        <li class="es-item" role="option" data-value="ChatGPT" aria-selected="true"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/chatgpt.png" alt="">ChatGPT</li>
+        <li class="es-item" role="option" data-value="Claude" aria-selected="false"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/claude.png" alt="">Claude</li>
+        <li class="es-item" role="option" data-value="Perplexity" aria-selected="false"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/perplexity.svg" alt="">Perplexity</li>
+        <li class="es-item" role="option" data-value="Google AI概览" aria-selected="false"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/google.svg" alt="">Google AI概览</li>
+        <li class="es-item" role="option" data-value="DeepSeek" aria-selected="false"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/deepseek.svg" alt="">DeepSeek</li>
+        <li class="es-item" role="option" data-value="豆包" aria-selected="false"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/doubao.png" alt="">豆包</li>
+      </ul>
+      <select id="engine" style="display:none" aria-hidden="true" tabindex="-1">
+        <option value="ChatGPT">ChatGPT</option>
+        <option value="Claude">Claude</option>
+        <option value="Perplexity">Perplexity</option>
+        <option value="Google AI概览">Google AI概览</option>
+        <option value="DeepSeek">DeepSeek</option>
+        <option value="豆包">豆包</option>
+      </select>
+    </div>
+    <label style="margin-top:12px">这条问的问题（必填，填你问 AI 的原话，用来对上问题清单和测试矩阵）</label>
+    <input type="text" id="sNote" placeholder="例：项目管理工具哪家好用" required>
+    <label style="margin-top:16px">粘贴这条回答（按下面对应引擎的说明复制）</label>
+    <div class="engine-tip" id="tip-ChatGPT">
+      <div class="et-head"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/chatgpt.png" alt=""> ChatGPT 怎么复制</div>
+      <div class="et-step"><div class="et-num">1</div><div><b>主框只放回答正文</b>：从回答第一句框选到正文结束，<code>Ctrl/⌘+C</code> 复制粘进来。回答末尾的可点选问卷、「如果你愿意，我可以……」不用选，选进来了工具也会自动剔掉。</div></div>
+      <div class="et-step"><div class="et-num">2</div><div><b>来源要单独复制</b>：点回答下方的<b>「…」</b>，再点<b>「查看来源」</b>。面板里<b>上面那组（正文引用的）和下面「更多」都可能折叠成「再显示 N 个」</b>，每一处都点开，直到都变成「收起」，再整块复制，粘到下面的<b>「查看来源」面板框</b>。</div></div>
+      <div class="et-step"><div class="et-num">3</div><div>粘进来的内容里如果还有「再显示 N 个」，结果卡会提醒你来源没展开完。引用角标（比如回答里的「飞书 +1」）会被归进来源层，不算正文点名。</div></div>
+      <div class="et-step"><div class="et-num">4</div><div>界面是 2026-10 的样子，ChatGPT 改得勤，名字变了以实际界面为准。</div></div>
+    </div>
+    <div class="engine-tip" id="tip-Claude" style="display:none">
+      <div class="et-head"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/claude.png" alt=""> Claude 怎么复制</div>
+      <div class="et-step"><div class="et-num">1</div><div>回答上方那行<b>思考/搜索过程摘要默认是收起的</b>（一行小字加 <code>›</code> 箭头），先点开<b>展开</b>它。</div></div>
+      <div class="et-step"><div class="et-num">2</div><div><b>整段选中回答</b>，连同展开后的思考文字和搜索结果面板（含 <code>Done</code> 之前的全部内容），一起复制。</div></div>
+      <div class="et-step"><div class="et-num">3</div><div>粘进下面的框。工具按 <code>Done</code> 自动分界：之前是搜索/来源，之后是回答正文。</div></div>
+    </div>
+    <div class="engine-tip" id="tip-Perplexity" style="display:none">
+      <div class="et-head"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/perplexity.svg" alt=""> Perplexity 怎么复制</div>
+      <div class="et-step"><div class="et-num">1</div><div>点回答下方 Perplexity <b>自带的「Copy」按钮</b>复制答案（<b>别手动框选</b>），这样引用链接才完整，且不含思考/来源列表/追问等杂质。粘进下面的框。</div></div>
+      <div class="et-step"><div class="et-num">2</div><div>想把<b>完整来源列表的链接</b>也记录下来，就展开中间「Completed 步骤」，选中那份检索结果列表，粘到下面的 <b>「来源 / 检索面板」框</b>（只算检索层、不进正文）。</div></div>
+    </div>
+    <div class="engine-tip" id="tip-GoogleAI概览" style="display:none">
+      <div class="et-head"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/google.svg" alt=""> Google AI概览 怎么复制</div>
+      <div class="et-step"><div class="et-num">1</div><div>在 <b>Google 搜索</b>某个问题，等结果顶部出现 <b>「AI 概览」</b>（AI Overview）。</div></div>
+      <div class="et-step"><div class="et-num">2</div><div><b>选中整段 AI 概览回答</b>，复制粘进下面的框，正文里引用角标的来源链接会自动抓取。</div></div>
+      <div class="et-step"><div class="et-num">3</div><div>点开右侧「来源」面板，选中粘到下面的 <b>「来源 / 检索面板」框</b>，有些来源<b>只在面板里、正文没角标</b>，放这里能记录、且不干扰正文。</div></div>
+    </div>
+    <div class="engine-tip" id="tip-DeepSeek" style="display:none">
+      <div class="et-head"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/deepseek.svg" alt=""> DeepSeek 怎么复制</div>
+      <div class="et-step"><div class="et-num">1</div><div>先点亮输入框下方的<b>「智能搜索」</b>按钮再问问题（不点亮就不会联网，回答里不会有来源数据），等回答生成完，<b>手动框选整段回答</b>（连同正文上方默认展开显示的<b>「已阅读 N 个网页」</b>标签一起选中），<code>Ctrl/⌘+C</code> 复制，粘进下面的框。</div></div>
+      <div class="et-step"><div class="et-num">2</div><div>工具会自动把「已阅读 N 个网页」这一行归入检索层，不进正文判定。</div></div>
+      <div class="et-step"><div class="et-num">3</div><div><b>⚠️ 别用回答下方自带的「复制」图标</b>，它只复制干净正文，会把所有来源信息都丢掉，粘进来只能判断"正文有没有点名"，判不出"是否被引用/被检索到"。</div></div>
+      <div class="et-step"><div class="et-num">4</div><div>想更全面，正文上方是<b>「已阅读 N 个网页」</b>，回答底部操作栏上方还有一个<b>「N 个网页」</b>，点这两处任意一个，右侧都会展开完整的「搜索结果」面板（通常比正文标签显示的来源更多），选中粘到下面的 <b>「来源 / 检索面板」框</b>（只算检索层、不进正文）。</div></div>
+    </div>
+    <div class="engine-tip" id="tip-豆包" style="display:none">
+      <div class="et-head"><img class="es-logo" src="https://aimarketinglift.com/assets/images/engine-logos/doubao.png" alt=""> 豆包 怎么复制</div>
+      <div class="et-step"><div class="et-num">1</div><div>在豆包问问题，等回答生成完，点开顶部<b>「搜索 N 个关键词，参考 M 篇资料」</b>把它<b>展开</b>（默认是收起的）。</div></div>
+      <div class="et-step"><div class="et-num">2</div><div><b>从展开后的关键词那一行开始，往下连同来源列表和整段回答一起手动框选</b>，<b>一次性</b>复制，粘进下面的主框即可。工具会自动把关键词和来源列表归入检索层，末尾的"相关视频"推荐也会自动丢弃，不会误判进正文。</div></div>
+      <div class="et-step"><div class="et-num">3</div><div><b>⚠️ 别用回答下方操作栏最左侧自带的「复制」按钮</b>，它只给干净正文，来源列表和关键词全部丢失，粘进来只能判断"正文有没有点名"，判不出"是否被引用/被检索到"。</div></div>
+    </div>
+    <textarea id="singleAnswer" placeholder="按上面对应引擎的说明复制，然后粘到这里……" style="min-height:220px"></textarea>
+    <div id="sourcesPanelWrap">
+      <label style="margin-top:12px" id="srcLabel">来源 / 检索面板</label>
+      <textarea id="sourcesPanel" placeholder="把搜索来源面板 / 检索结果列表粘到这里，只算「检索层」，不进正文，来源链接照样自动抓取。" style="min-height:160px"></textarea>
+    </div>
+    <div class="fmt" style="margin-top:12px;margin-bottom:0">粘进来后，工具会自动分辨 <b>回答正文</b>（判是否被点名 / 被引用）与 <b>搜索 / 来源面板</b>（判是否只被检索到），你不用手动分开；正文里内联引用的隐藏链接也会自动识别，无需逐个点开。</div>
+    <div class="actions">
+      <button class="btn" onclick="judgeSingle()">看结果</button>
+      <span class="hint">记录自动保存在本机浏览器；换设备或清浏览器数据会丢失，重要结果建议导出 CSV。</span>
+    </div>
+  </div>
+
+  <div class="zone-label"><span>测试结果</span></div>
+
+  <div class="card card-insight" id="resultCard" style="display:none">
+    <div id="resultBox"></div>
+  </div>
+
+  <div class="card card-insight" id="scorecardCard" style="display:none">
+    <h2>汇总记分卡<span class="count-pill" id="scoreCount">0</span></h2>
+    <div id="scorecardBody"></div>
+    <details class="mx-compare" style="margin-top:6px">
+      <summary class="hint" style="cursor:pointer;color:var(--amber);font-weight:600">优化前 / 优化后对比（选填）</summary>
+      <div style="margin-top:10px">
+        <label style="margin-top:0">分界日期（该日期 0 点之前记为「优化前」，之后为「优化后」）</label>
+        <input type="date" id="compareDate" onchange="renderScorecard()">
+        <div id="compareBody" style="margin-top:12px"></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="card card-insight" id="adviceCard" style="display:none">
+    <h2>行动建议</h2>
+    <div id="adviceBody"></div>
+  </div>
+
+  <div class="card card-insight" id="sourceCard" style="display:none">
+    <h2>引用来源情报</h2>
+    <p class="hint" style="margin-bottom:10px">被引最多的第三方域名，就是值得去铺内容的渠道。</p>
+    <label class="mx-src-filter"><input type="checkbox" id="srcOnlyThird" checked onchange="renderSources()"> 只看第三方渠道（不含品牌官网/竞品官网）</label>
+    <div id="sourceBody"></div>
+  </div>
+
+  <div class="zone-label"><span>历史记录</span></div>
+
+  <div class="card">
+    <h2>测试记录<span class="count-pill" id="qCount">0</span></h2>
+    <div class="queue-wrap">
+      <table id="qTable">
+        <thead><tr>
+          <th></th><th>时间</th><th>问题</th><th>填写的原话</th><th>引擎</th><th>状态</th>
+          <th>品牌提及</th><th>仅被引</th><th>检索层命中</th>
+          <th>位置</th><th>竞品出现顺序</th>
+          <th style="width:150px">被引官网链接</th><th>引用来源</th><th>看原文</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="copyAll()">复制全部（粘进 Excel）</button>
+      <button class="btn secondary" onclick="downloadCSV()">下载 CSV</button>
+      <button class="btn danger small" onclick="clearQueue()">清空记录</button>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-sec">
+    <div class="faq-title">常见问题</div>
+    <details class="faq-item">
+      <summary>这个工具和 GEO 诊断 Skill 有什么区别？</summary>
+      <p>GEO 可见度判定助手分析的是 AI 引擎已经生成的真实回答，判断你的品牌在这些回答里有没有被提及、提及位置在哪、有没有被引用链接；GEO 诊断 Skill 是对整站做系统检查（可抓取性、结构化数据、内容质量等），输出 0-100 GEO 得分和优化路线图。一个测当下的可见度表现，一个做体系化诊断。</p>
+    </details>
+    <details class="faq-item">
+      <summary>数据会上传到服务器吗？</summary>
+      <p>不会。这是一个纯前端工具，所有判定逻辑都在你的浏览器里本地完成，粘贴的内容不会发送到任何服务器。测试记录会保存在你自己浏览器的本地存储（localStorage）里，跨会话累积，但同样不会上传；清除浏览器数据或点击「清空记录」即可彻底删除，重要结果建议导出 CSV 备份。</p>
+    </details>
+    <details class="faq-item">
+      <summary>支持哪些 AI 引擎？各自怎么粘？</summary>
+      <div class="faq-engine-wrap">
+        <div class="faq-engine-list">
+          <div class="faq-engine-row">
+            <img class="faq-engine-logo" src="https://aimarketinglift.com/assets/images/engine-logos/chatgpt.png" alt="">
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">ChatGPT</div>
+              <div class="faq-engine-text">主框只放回答正文。来源点回答下方「…」→<b>「查看来源」</b>，上下两组的「再显示 N 个」都点开到「收起」，整块复制粘到下面的来源框。末尾问卷、追问建议、引用角标会自动剔掉。</div>
+            </div>
+          </div>
+          <div class="faq-engine-row">
+            <img class="faq-engine-logo" src="https://aimarketinglift.com/assets/images/engine-logos/claude.png" alt="">
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">Claude</div>
+              <div class="faq-engine-text">回答上方的思考/搜索过程摘要<b>默认收起</b>，先点开展开，再整段选中回答连同展开内容一起粘贴，工具以 <code>Done</code> 标记自动分界正文与来源。</div>
+            </div>
+          </div>
+          <div class="faq-engine-row">
+            <img class="faq-engine-logo" src="https://aimarketinglift.com/assets/images/engine-logos/perplexity.svg" alt="">
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">Perplexity</div>
+              <div class="faq-engine-text">点回答下方它<b>自带的「Copy」按钮</b>复制（得到干净 markdown，来源以 <code>[来源](链接)</code> 内联），<b>别手动框选</b>。</div>
+            </div>
+          </div>
+          <div class="faq-engine-row">
+            <img class="faq-engine-logo" src="https://aimarketinglift.com/assets/images/engine-logos/google.svg" alt="">
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">Google AI概览</div>
+              <div class="faq-engine-text">选中整段回答复制即可，正文里引用角标的来源链接会自动抓取。</div>
+            </div>
+          </div>
+          <div class="faq-engine-row">
+            <img class="faq-engine-logo" src="https://aimarketinglift.com/assets/images/engine-logos/deepseek.svg" alt="">
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">DeepSeek</div>
+              <div class="faq-engine-text">先点亮「智能搜索」再问，<b>手动框选</b>整段回答（连同正文上方默认展开的「已阅读 N 个网页」标签一起选中）复制。<b>不要点自带的「复制」图标</b>，会丢掉全部来源链接。</div>
+            </div>
+          </div>
+          <div class="faq-engine-row">
+            <img class="faq-engine-logo" src="https://aimarketinglift.com/assets/images/engine-logos/doubao.png" alt="">
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">豆包</div>
+              <div class="faq-engine-text">先点开「搜索N个关键词，参考M篇资料」<b>展开来源列表</b>（默认收起），再连同整段回答一起<b>手动框选</b>复制。同样不要用自带的「复制」按钮。</div>
+            </div>
+          </div>
+        </div>
+        <div class="faq-engine-note">粘贴前先在 Step 2 的下拉框里选对应引擎，工具会按引擎自动区分正文与来源。其它大模型与一次判多条的批量模式，会在后续版本逐步加入。</div>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>「状态」一共有几种？分别是什么意思？</summary>
+      <div class="faq-engine-wrap">
+        <div class="faq-engine-list">
+          <div class="faq-engine-row">
+            <span class="faq-status-icon">✅</span>
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">正文提及</div>
+              <div class="faq-engine-text">品牌名直接出现在回答正文里，可见度最强。</div>
+            </div>
+          </div>
+          <div class="faq-engine-row">
+            <span class="faq-status-icon">🔗</span>
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">仅被引</div>
+              <div class="faq-engine-text">正文没点名，但官网链接被当作来源引用了。</div>
+            </div>
+          </div>
+          <div class="faq-engine-row">
+            <span class="faq-status-icon">🔍</span>
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">仅检索到</div>
+              <div class="faq-engine-text">正文和引用都没有，但检索 / 来源层里出现过。</div>
+            </div>
+          </div>
+          <div class="faq-engine-row">
+            <span class="faq-status-icon">⚪</span>
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">无引用数据</div>
+              <div class="faq-engine-text">这条回答没有任何链接、也没填检索层内容，判不出是否被引用，只能确认正文没点名。</div>
+            </div>
+          </div>
+          <div class="faq-engine-row">
+            <span class="faq-status-icon">❌</span>
+            <div class="faq-engine-body">
+              <div class="faq-engine-name">未出现</div>
+              <div class="faq-engine-text">正文、引用、检索层里都没找到。</div>
+            </div>
+          </div>
+        </div>
+        <div class="faq-engine-note">判定按上面的顺序从上往下检查，命中第一条就停，比如正文提及了就不会再看是否也被引用。汇总记分卡的「状态分布」和行动建议都是按这 5 种状态统计的。</div>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>被引率、检索命中率、排位分别怎么算？</summary>
+      <p>被引率：官网域名的链接出现在回答正文或来源列表里，就算这一条被引。检索命中率：检索 / 来源层的文字里出现品牌名或官网域名，就算检索到，来源标题里提到品牌也算。排位：一条回答里常有好几组列表，每组各自从 1 数；品牌第一次落在哪一组的哪一条，就报"在这一组里排第几 / 这一组共几项"，开头先把几款点一遍的引言句不算。只在正文里被当成反面例子的提及，工具判不出来，判完在结果卡里勾选"负面提及"，会单独标在测试记录和 CSV 里。前后两次对比时，请用同一套口径，换了口径的数字不要直接比。</p>
+    </details>
+    <details class="faq-item">
+      <summary>是不是要一个问题、一个引擎地手动测？</summary>
+      <p>是的。这个工具是单条判定：每次粘贴一条 AI 回答、点一次「看结果」生成一条记录，没有对接任何 AI 引擎的接口，所以没法帮你自动批量问，需要你自己去各个引擎问完、复制回答、粘贴回来判定。Step 2 的测试计划矩阵是为了让「问题 × 引擎」这套来回流程有清单可循、不容易漏测，点未测格子会自动帮你预填好问题和引擎。攒够几条记录后，汇总记分卡、行动建议、引用来源情报才会给出有统计意义的结论。</p>
+    </details>
+    <details class="faq-item">
+      <summary>只测一个引擎、一个问题也能用吗？</summary>
+      <p>可以。Step 2 的测试计划矩阵是选填项，完全可以跳过：Step 1 填好品牌后直接到 Step 3 选一个引擎、粘一条回答、点「看结果」，就能拿到完整的单条判定结果，也会正常进测试记录、可以导出 CSV。区别只是汇总记分卡、行动建议、引用来源情报这几张卡片在样本量不足 5 条时会显示"样本不足"的提示，而不是给出可能没有统计意义的百分比结论，这是刻意设计，避免用 1 条记录冒充有代表性的结论。</p>
+    </details>
+  </div>
+
+  <!-- CONVERSION MODULES -->
+  <div class="convert-wrap">
+    <a class="crosslink-card" href="https://github.com/jiguang9/geo-audit">
+      <div class="crosslink-icon">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="3" width="20" height="24" rx="2"/>
+          <path d="M9 14 L12 17 L19 10" stroke-width="1.8"/>
+        </svg>
+      </div>
+      <div class="crosslink-body">
+        <div class="crosslink-title">测完可见度发现缺位？</div>
+        <div class="crosslink-desc">用 GEO 诊断 Skill 对整站做系统检查，找出可抓取性、结构化数据、内容质量上的具体问题。</div>
+      </div>
+      <span class="crosslink-arrow">去体检 →</span>
+    </a>
+
+    <div class="consult-cta">
+      <div class="consult-cta-eyebrow">咨询服务 · Consulting</div>
+      <div class="consult-cta-h">需要完整的 GEO 诊断和执行方案？</div>
+      <p class="consult-cta-p">批量判定能看到当下的可见度表现，但要系统性提升品牌在 AI 搜索中的表现，往往需要结合内容结构、站点技术信号和长期跟踪。可以提交一次咨询需求，先判断方向再谈服务。</p>
+      <a href="https://aimarketinglift.com/consulting" class="consult-cta-btn">
+        提交咨询需求
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-strip">
+  开源工具 · MIT 许可 · <a href="https://github.com/jiguang9/geo-judge">GitHub</a> · 作者 <a href="https://aimarketinglift.com">硅基光哥 · AI Marketing Lift</a>
+</div>
+<div class="toast" id="toast">已复制</div>
+
+<script>
+const queue = [];
+const urlReg = /https?:\/\/[^\s"'<>()\[\],，。；;]+/g;
+
+/* ===== STORAGE-BEGIN ===== */
+const STORE_KEY = "aml_geo_judge_v1";
+const MAX_RECORDS = 200;
+const sessionPreviews = {};   // id -> previewHtml，只在当次会话内存，永不写入 localStorage
+let pendingQid = "";
+let lastInput = null;         // 最近一次判定的输入，撤销时放回输入框（不写进 localStorage）          // 测试矩阵点击「未测」后待关联的问题文本
+
+function emptyStore() { return { v: 1, config: { brand: "", brandDomain: "", competitors: "" }, questions: [], records: [], noteDraft: "" }; }
+function loadStore() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return emptyStore();
+    const obj = JSON.parse(raw);
+    if (!obj || obj.v !== 1) return emptyStore();
+    return {
+      v: 1,
+      config: obj.config && typeof obj.config === "object" ? obj.config : emptyStore().config,
+      questions: Array.isArray(obj.questions) ? obj.questions : [],
+      records: Array.isArray(obj.records) ? obj.records : [],
+      noteDraft: typeof obj.noteDraft === "string" ? obj.noteDraft : "",
+    };
+  } catch (e) { return emptyStore(); }
+}
+function stripRecord(q) {
+  const { previewHtml, ...rest } = q;
+  return { ...rest, sources: (rest.sources || []).slice(0, 50) };
+}
+function saveStore() {
+  try {
+    const store = {
+      v: 1,
+      config: {
+        brand: document.getElementById("brand").value,
+        brandDomain: document.getElementById("brandDomain").value,
+        competitors: document.getElementById("competitors").value,
+      },
+      questions: getQuestions(),
+      records: queue.slice(-MAX_RECORDS).map(stripRecord),
+      noteDraft: document.getElementById("sNote").value,
+    };
+    localStorage.setItem(STORE_KEY, JSON.stringify(store));
+  } catch (e) {
+    toast("本地存储已满，请导出 CSV 后清理旧记录");
+  }
+}
+function initFromStore() {
+  const store = loadStore();
+  document.getElementById("brand").value = store.config.brand || "";
+  document.getElementById("brandDomain").value = store.config.brandDomain || "";
+  document.getElementById("competitors").value = store.config.competitors || "";
+  document.getElementById("qList").value = (store.questions || []).join("\n");
+  document.getElementById("sNote").value = store.noteDraft || "";
+  queue.length = 0;
+  for (const r of store.records) { if (!r.id) r.id = "r" + Math.random().toString(36).slice(2, 10); queue.push(r); }  // 老记录补编号，单条删除按编号找
+  renderAll();
+}
+/* ===== STORAGE-END ===== */
+
+function splitList(s) { return s.split(",").map(x => x.trim()).filter(Boolean); }
+function escapeHtml(s) { return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+
+// normalizeText 定义在下方 PURE 块内（computeSources 也要用，放进块内以便 sed 抽取该块可独立离线测试）
+// 把一个配置词展开为若干干净的"归一化针"：剥 http(s)://、www.、把中/英文括号注释拆成独立针
+function expandVariant(v) {
+  const out = [];
+  const push = x => { const n = normalizeText(String(x).trim()); if (n) out.push(n); };
+  let base = String(v).trim().replace(/^https?:\/\//i, "").replace(/^www\./i, "");
+  const noteRe = /[（(]([^）)]*)[）)]/g;
+  let m; while ((m = noteRe.exec(base))) push(m[1]);   // 括号内注释作为独立变体
+  push(base.replace(noteRe, "").trim());               // 去掉括号后的主体
+  return out.length ? out : [normalizeText(v)];
+}
+// needles 已归一化；normHaystack = normalizeText(原文)，命中 index/len 映射回原文
+function findAll(normHaystack, needles) {
+  const hits = [];
+  for (const needle of needles) {
+    if (!needle) continue;
+    let i = 0;
+    while ((i = normHaystack.indexOf(needle, i)) !== -1) { hits.push({ index: i, len: needle.length }); i += needle.length; }
+  }
+  hits.sort((a, b) => a.index - b.index);
+  return hits;
+}
+// 去掉相互重叠的命中（不同变体在同一处命中只算一次），用于计数/序位
+function dedupHits(hits) {
+  const out = []; let end = -1;
+  for (const h of hits) { if (h.index >= end) { out.push(h); end = h.index + h.len; } }
+  return out;
+}
+
+// 列表结构探测：行首序号（1. / 1、/ 1) / ①-⑳ / - * · •）视为条目，≥3 条才算列表
+// 2026-10-19：允许行首带 Markdown 标题井号或加粗星号（豆包复制出来是 "## 1. 飞书"、"**1. 飞书**"）
+const LIST_MARKER = /^\s*(?:#{1,6}\s*)?(?:\*\*)?(\d{1,3}\\?[.、)]|[①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳]|[-*·•])\s+/;
+// 小标题行（"## 推荐" / "二、按场景选"）不当续行，用来切断上一组列表
+const SECTION_LINE = /^\s*(#{1,6}\s+\S|[一二三四五六七八九十]+[、.．]\s*\S)/;
+// 一条回答里常有好几组列表（推荐表、按场景选、选型建议……）。每组各自从 1 数，
+// 编号回到 1、或中间隔着小标题，就算新的一组；排位报"在这一组里排第几 / 这一组共几项"。
+function detectList(text) {
+  const lines = text.split("\n");
+  const items = []; let offset = 0, group = -1, open = false, lastKind = "";
+  for (const line of lines) {
+    const m = line.match(LIST_MARKER);
+    if (m) {
+      const tok = m[1], num = /^\d/.test(tok) ? parseInt(tok, 10) : null, kind = num != null ? "num" : "dot";
+      // 编号条目下面的圆点小项（"1. 禅道" 下面的 "* 免费政策：…"）算这一条的续行，不另起一组
+      if (kind === "dot" && open && lastKind === "num") { items[items.length - 1].end = offset + line.length; offset += line.length + 1; continue; }
+      if (!open || kind !== lastKind || num === 1) group++;
+      items.push({ start: offset, end: offset + line.length, group });
+      open = true; lastKind = kind;
+    } else if (SECTION_LINE.test(line)) {
+      open = false;                                    // 小标题：上一组结束，不并进上一条
+    } else if (items.length && open) items[items.length - 1].end = offset + line.length; // 续行归上一条
+    offset += line.length + 1;
+  }
+  const sizes = {}; for (const it of items) sizes[it.group] = (sizes[it.group] || 0) + 1;
+  let seen = {}; for (const it of items) { seen[it.group] = (seen[it.group] || 0) + 1; it.ord = seen[it.group]; it.glen = sizes[it.group]; }
+  return { isList: items.length >= 3, items };
+}
+// 返回这个位置落在哪一条：{ ord: 组内第几, glen: 这一组共几项 }；不在任何一条里返回 null
+function itemAt(index, items) {
+  for (const it of items) if (index >= it.start && index < it.end) return { ord: it.ord, glen: it.glen };
+  return null;
+}
+function itemOrdinalOf(index, items) { const r = itemAt(index, items); return r ? r.ord : 0; }
+
+// 检索/来源层扫描：输入是"已搜索网页 + 右侧来源面板"文本；剥掉 site: 让域名/名称可被子串匹配
+function scanRetrieval(retText, cfg) {
+  if (!retText || !retText.trim()) return { has: false, brand: false, comps: {} };
+  const norm = normalizeText(retText.replace(/site:/gi, " "));
+  const brand = dedupHits(findAll(norm, cfg.brandNeedles)).length > 0 || (!!cfg.brandDomain && norm.indexOf(cfg.brandDomain) !== -1);
+  const comps = {};
+  for (const g of cfg.compGroups) comps[g.name] = dedupHits(findAll(norm, g.needles)).length > 0;
+  return { has: true, brand, comps };
+}
+
+// 从一次整段粘贴里，自动把"检索/来源"内容与"回答正文"分开。规则公开可复现，按引擎分支。
+// ChatGPT：逐行标记（已搜索网页 / 网页搜索 / site: 查询 / 任务期间读取），英文版界面兜底
+// "Searched the web"/"Searching the web"/"Browsing"/"Search results"（未实测，按已知常见文案补的合理近似）。
+const RETRIEVAL_LINE = /已搜索|网页搜索|任务期间读取|^\s*site:|search(ed|ing)?\s+the\s+web|browsing(\s+the\s+web)?|search\s+results?/i;
+// Claude：搜索面板在正文之前，以 "Done"（完成）作分界；无 Done 时按行回退（结果计数 / 纯域名行）。
+const CLAUDE_DONE_LINE = /^\s*(done|完成|已完成)\s*$/i;
+const CLAUDE_RETRIEVAL_LINE = /^\s*\d+\s*results?\s*$|^\s*\d+\s*个?\s*(结果|来源)\s*$|^\s*(https?:\/\/)?(www\.)?[a-z0-9-]+(\.[a-z]{2,})+\/?\s*$/i;
+// 粘贴时自动抽取的「[引用链接] …」行是来源层（不是正文引用），无论落在 Done 之后都归检索层。
+const HARVEST_LINE = /^\s*\[引用链接\]/;
+// Perplexity：推荐用回答自带「Copy」按钮 → 干净 markdown，引用为 [shortname](url) 内联、URL 纯文本，
+// 无思考/Completed steps/来源列表/追问/页脚。以下两条仅为「手动框选」脏格式兜底。
+const PPLX_NOISE_LINE = /^\s*completed\s+\d+\s+steps?\s*$|^\s*(sources|usage)\s*$|^\s*\d+s\s*$/i;
+const PPLX_SHORTNAME_LINE = /^\s*[a-z0-9][a-z0-9._-]*\s*$/;  // 独占一行的小写来源 shortname（手动粘贴时的来源列表）
+// Google AI概览（搜索 AI Overview）：正文 + 内联引用角标（角标链接经 harvest 抓取归检索层）。噪音行剔除，
+// 英文版界面（"AI Overview"标题/免责声明/搜索 tab 标签）一并兜底（未实测，按已知常见文案补的合理近似）。
+const GAIO_NOISE_LINE = /^\s*(ai\s*概览|ai\s*的回答未必正确无误.*|尽情提问|更多|工具|全部|购物|图片|视频|短视频|新闻|ai\s*模式|ai\s*overview|generative\s+ai\s+is\s+experimental.*|ai\s+responses?\s+may\s+include\s+mistakes.*|ask\s+a\s+follow.?up.*|more|tools|all|shopping|images|videos|short\s+videos|news|web|maps|ai\s+mode)\s*$/i;
+// DeepSeek（快速模式+智能搜索，2026-08-30 实测确认）：正文上方是"已阅读 N 个网页"（默认展开、不需要点开），回答
+// 底部操作栏上方还有一个重复入口，只写"N 个网页"（没有"已阅读"两字，故不匹配下方正则，不会被误判为分界标记，属预期行为，
+// 因为它出现在正文末尾，若匹配会把整段正文错误吞进检索层）；两处点开都弹出同一个右侧「搜索结果」面板。自带「复制」按钮只给
+// 干净正文，来源信息全部丢失，不要用。"Found N web pages"/"Read N pages"/"View All" 英文变体是未经证实的推测性兜底，保留以防英文界面。
+// 引用角标不会被复制为文本（实测确认），无需处理。取「最后一个标记行」为分界，之前全部归检索层。
+const DEEPSEEK_MARKER_LINE = /^\s*(found\s+\d+\s+web\s+pages?|read\s+\d+\s+pages?|view\s+all|已?找到\s*\d+\s*个?\s*网页|已?搜索到\s*\d+\s*个?\s*网页|已?阅读\s*\d+\s*个?\s*(页面|网页|页)|查看全部|展开全部)\s*$/i;
+// 豆包（联网搜索，"搜索N个关键词，参考M篇资料"默认收起，需手动点开才能选中来源列表）：
+// 展开后来源列表是「纯数字编号行」+「下一行标题」的两行结构，虚线分隔符是 CSS 边框、不会被复制成文字，
+// 故取「最后一个纯数字编号行」+ 其后一行（最后一条来源标题）为检索层终点，之前全部归检索层（含用户原始提问，无副作用）。
+const DOUBAO_NUM_ONLY_LINE = /^\s*\d{1,3}\.\s*$/;
+// 2026-10 起豆包框选复制出来的是 Markdown：来源条目变成 "[1.]( ) [标题](链接)" 或 "[1.\n\n标题\n\n](链接)"，
+// 回答标题变成 "## 1. 飞书"。来源编号行两种格式都认；Markdown 条目可能跨好几行，终点是带 "](http" 的那一行。
+const DOUBAO_MD_SRC_LINE = /^\s*\[\d{1,3}\.(\]|\s*$)/;
+const DOUBAO_LINK_END = /\]\(\s*https?:\/\//;
+// 正文结束后常跟一段"相关视频"抖音推荐，与检索/正文都无关，整段丢弃，避免视频标题误判品牌/竞品提及。
+const DOUBAO_RELATED_LINE = /^\s*相关视频\s*$/;
+function autoSplit(fullText, engine) {
+  const lines = fullText.split("\n");
+  if (engine === "Google AI概览") {
+    const body = [], ret = [];
+    for (const line of lines) {
+      if (HARVEST_LINE.test(line)) { ret.push(line); continue; }  // 角标/来源链接（harvest）→ 检索层
+      if (GAIO_NOISE_LINE.test(line)) continue;                    // AI 概览头 / 免责声明 / 搜索 tab 残留
+      body.push(line);
+    }
+    return { body: body.join("\n"), retrieval: ret.join("\n") };
+  }
+  if (engine === "Perplexity") {
+    const body = [], ret = [];
+    for (const line of lines) {
+      if (HARVEST_LINE.test(line)) { ret.push(line); continue; }
+      if (PPLX_NOISE_LINE.test(line)) continue;              // 丢弃 Completed / Sources / Usage / 6s
+      if (PPLX_SHORTNAME_LINE.test(line)) {                  // 来源 shortname 行 → 检索层
+        // 若用户把中间「搜索结果」列表也粘进来，它是「标题行/shortname 行」成对；
+        // 把紧邻的上一行（标题）也移入检索层，避免评测文章标题漏进正文虚增品牌/竞品计数。
+        if (body.length && body[body.length - 1].trim()) ret.push(body.pop());
+        ret.push(line);
+        continue;
+      }
+      body.push(line);
+    }
+    return { body: body.join("\n"), retrieval: ret.join("\n") };
+  }
+  if (engine === "Claude") {
+    // 先把 [引用链接] 抽取行剥进来源层，避免其 URL 被 Done 分界当成正文引用
+    const harvest = [], rest = [];
+    for (const line of lines) (HARVEST_LINE.test(line) ? harvest : rest).push(line);
+    let doneIdx = -1;
+    for (let i = 0; i < rest.length; i++) if (CLAUDE_DONE_LINE.test(rest[i])) doneIdx = i;
+    let body, ret;
+    if (doneIdx !== -1) {
+      body = rest.slice(doneIdx + 1).join("\n");
+      ret = rest.slice(0, doneIdx).join("\n");
+    } else {
+      // 无 Done：逐行回退（结果计数行 / 纯域名行归检索；标题行会漏进正文，为可接受损失）
+      const b = [], r = [];
+      for (const line of rest) (CLAUDE_RETRIEVAL_LINE.test(line) ? r : b).push(line);
+      body = b.join("\n"); ret = r.join("\n");
+    }
+    if (harvest.length) ret += (ret ? "\n" : "") + harvest.join("\n");
+    return { body, retrieval: ret };
+  }
+  if (engine === "DeepSeek") {
+    // 整段扫描：找最后一个 Found/Read/View All 标记行的行号，之前（含该行）全部归检索层；
+    // 之后是正文。View All 后紧跟的收尾思考句无标记可循，会漏进正文，为可接受损失（同 Claude 无 Done 回退）。
+    let lastMarker = -1;
+    for (let i = 0; i < lines.length; i++) if (DEEPSEEK_MARKER_LINE.test(lines[i])) lastMarker = i;
+    const body = [], ret = [];
+    for (let i = 0; i < lines.length; i++) {
+      if (HARVEST_LINE.test(lines[i])) { ret.push(lines[i]); continue; }
+      (i <= lastMarker ? ret : body).push(lines[i]);
+    }
+    return { body: body.join("\n"), retrieval: ret.join("\n") };
+  }
+  if (engine === "豆包") {
+    let lastNumIdx = -1, lastIsMd = false;
+    for (let i = 0; i < lines.length; i++) {
+      if (DOUBAO_NUM_ONLY_LINE.test(lines[i])) { lastNumIdx = i; lastIsMd = false; }
+      else if (DOUBAO_MD_SRC_LINE.test(lines[i])) { lastNumIdx = i; lastIsMd = true; }
+    }
+    let boundary = lastNumIdx === -1 ? -1 : lastNumIdx + 1;  // 旧格式：含最后一条来源的标题行
+    if (lastIsMd) {                                            // Markdown：一直到这条来源链接收尾的那一行
+      boundary = lastNumIdx;
+      for (let j = lastNumIdx; j < Math.min(lines.length, lastNumIdx + 12); j++) if (DOUBAO_LINK_END.test(lines[j])) { boundary = j; break; }
+    }
+    const body = [], ret = [];
+    let dropping = false;
+    for (let i = 0; i < lines.length; i++) {
+      if (DOUBAO_RELATED_LINE.test(lines[i])) { dropping = true; continue; }  // "相关视频"及其后全部丢弃
+      if (dropping) continue;
+      if (HARVEST_LINE.test(lines[i])) { ret.push(lines[i]); continue; }
+      (i <= boundary ? ret : body).push(lines[i]);
+    }
+    return { body: body.join("\n"), retrieval: ret.join("\n") };
+  }
+  const body = [], ret = [];
+  const src = engine === "ChatGPT" ? chatgptClean(lines, ret) : lines;
+  for (const line of src) (RETRIEVAL_LINE.test(line) ? ret : body).push(line);
+  return { body: body.join("\n"), retrieval: ret.join("\n") };
+}
+
+// ChatGPT（2026-10 界面）回答正文里混着几样不该算正文的东西，判定前剔掉：
+// 1）引用角标：来源名独占一行、下一行是 "+1" 这类计数（"飞书" / "+1"），移进检索层，不算正文点名；
+// 2）回答末尾可点选的问卷（"1. 你主要管理什么项目？" 下面跟几行短选项）；
+// 3）"如果你愿意，我可以：" 和后面的追问建议；分享页页脚 "来源" / "ChatGPT 是 AI，可能会犯错。"
+const CHATGPT_CHIP_COUNT = /^\s*\+\d{1,2}\s*$/;
+const CHATGPT_FOLLOWUP = /^\s*((如果你愿意|如果您愿意)[，,]?\s*(我|也)|if\s+you(\s+would|\x27d)?\s+(want|like),?\s+i\s+can)/i;
+const CHATGPT_FOOTER = /^\s*(来源|sources)\s*$|ChatGPT\s*是\s*AI，?可能会犯错|ChatGPT (is AI and )?can make mistakes/i;
+const CHATGPT_QUIZ_Q = /^\s*\d{1,2}[.、]\s*\S.{0,38}[？?]\s*$/;
+function chatgptClean(lines, ret) {
+  let L = lines.slice();
+  const fu = L.findIndex(l => CHATGPT_FOLLOWUP.test(l));
+  if (fu !== -1) L = L.slice(0, fu);
+  // 问卷：一个"带问号的编号问题"，后面至少两行短选项（每行 ≤ 24 字、不带句号）
+  for (let i = 0; i < L.length; i++) {
+    if (!CHATGPT_QUIZ_Q.test(L[i])) continue;
+    let k = i + 1, opts = 0;
+    while (k < L.length && L[k].trim() && L[k].trim().length <= 24 && !/[。！]/.test(L[k])) { opts++; k++; }
+    if (opts >= 2) {
+      let cut = i;
+      if (cut > 0 && /帮你|帮您|为你|精准|筛选|推荐/.test(L[cut - 1]) && L[cut - 1].trim().length <= 20) cut--;
+      L = L.slice(0, cut); break;
+    }
+  }
+  const out = [];
+  for (let i = 0; i < L.length; i++) {
+    if (CHATGPT_FOOTER.test(L[i])) continue;
+    if (CHATGPT_CHIP_COUNT.test(L[i])) { if (out.length) ret.push(out.pop()); ret.push(L[i]); continue; }
+    out.push(L[i]);
+  }
+  return out;
+}
+
+function getConfigSilent() {
+  const brandRaw = splitList(document.getElementById("brand").value);
+  if (!brandRaw.length) return null;
+  const domainRaw = document.getElementById("brandDomain").value.trim().replace(/^https?:\/\//i, "").replace(/^www\./i, "");
+  return {
+    brandRaw,
+    brandName: brandRaw[0],
+    brandNeedles: brandRaw.flatMap(expandVariant),
+    brandDomain: normalizeText(domainRaw),
+    compGroups: splitList(document.getElementById("competitors").value).map(g => {
+      const variants = g.split("|").map(x => x.trim()).filter(Boolean);
+      return { name: variants[0] || g.trim(), needles: variants.flatMap(expandVariant) };
+    }),
+  };
+}
+function getConfig() {
+  const cfg = getConfigSilent();
+  if (!cfg) { alert("先填品牌名"); return null; }
+  return cfg;
+}
+
+function analyze(text, cfg, retrievalText) {
+  const urls = [...new Set(text.match(urlReg) || [])];
+  const body = text.replace(urlReg, " ");        // 去 URL 留空格防粘连；后续所有偏移量都基于 body
+  const norm = normalizeText(body);
+  const L = Math.max(body.length, 1);
+  const list = detectList(body);
+  const hasUrls = urls.length > 0;
+
+  // 品牌正文命中
+  const brandHits = dedupHits(findAll(norm, cfg.brandNeedles));
+  const mentioned = brandHits.length > 0;
+  // 正文里真正的内联引用 URL（用于判「仅被引」，只看正文，不含来源层）
+  const brandCiteUrls = urls.filter(u => cfg.brandDomain && normalizeText(u).includes(cfg.brandDomain));
+
+  // 检索/来源层（已搜索网页 + 来源面板 + [引用链接] 抽取行，选填）
+  const ret = scanRetrieval(retrievalText, cfg);
+  const retrievalHit = ret.brand;
+  // 来源层里匹配到品牌官网域名的完整 URL（用于展示，不参与「仅被引」判定）
+  const retUrls = [...new Set((retrievalText || "").match(urlReg) || [])];
+  const brandSourceUrls = retUrls.filter(u => cfg.brandDomain && normalizeText(u).includes(cfg.brandDomain));
+  // 展示用：正文内联引用 + 来源层匹配到的官网链接，合并去重
+  const brandUrls = [...new Set([...brandCiteUrls, ...brandSourceUrls])];
+
+  // 四层漏斗，判定顺序写死：提及层 → 引用层(正文内联) → 检索/来源层 → 无数据/未出现
+  let status;
+  if (mentioned) status = "正文提及";
+  else if (brandCiteUrls.length > 0) status = "仅被引";
+  else if (retrievalHit) status = "仅检索到";
+  else if (!hasUrls && !ret.has) status = "无引用数据";
+  else status = "未出现";
+  const citedOnly = status === "仅被引" ? "是" : (status === "无引用数据" ? "无引用数据" : "否");
+
+  // 位置：列表→序位/总数 + 归一化；叙述→字符偏移比例三分 + 偏移%
+  let posLabel = "—", posDetail = "", ordCell = "—", normPos = "", listTotalOverride = null;
+  if (mentioned) {
+    const first = brandHits[0].index;
+    if (list.isList) {
+      // 2026-10-19：先找品牌第一次落在列表条目里的那一处。很多回答开头先用一句话把推荐的几款点一遍，
+      // 按"第一次出现"算会被判成列表外；改成看品牌在列表里排第几，开头那句只作备注。
+      const inList = brandHits.map(h => itemAt(h.index, list.items)).find(Boolean);
+      const ord = inList ? inList.ord : 0, tot = inList ? inList.glen : list.items.length;
+      listTotalOverride = tot;
+      ordCell = (ord ? ord : "—") + "/" + tot;
+      normPos = ord ? (ord / tot).toFixed(2) : "";
+      posLabel = "列表"; posDetail = ord ? ("第" + ord + "项") : "列表外引言";
+    } else {
+      const p = first / L;
+      posLabel = p < 1/3 ? "前1/3" : (p < 2/3 ? "中1/3" : "后1/3");
+      posDetail = Math.round(p * 100) + "%"; normPos = p.toFixed(2);
+    }
+  }
+
+  // 命中原文片段（原样，不篡改），前后各留够一整句上下文，不只是几个字
+  let brandSnippet = "";
+  if (mentioned) {
+    const h = brandHits[0], s = Math.max(0, h.index - 60), e = Math.min(body.length, h.index + h.len + 60);
+    brandSnippet = (s > 0 ? "…" : "") + body.slice(s, e).replace(/\s+/g, " ").trim() + (e < body.length ? "…" : "");
+  }
+
+  // 竞品：全部命中（按序位/先后排序，含出现次数与列表序位）
+  const comps = [];
+  for (const group of cfg.compGroups) {
+    const hits = dedupHits(findAll(norm, group.needles));
+    if (!hits.length) continue;
+    const first = hits[0].index;
+    const ord = list.isList ? itemOrdinalOf(first, list.items) : 0;
+    comps.push({
+      name: group.name, count: hits.length, first, ordinal: ord,
+      normPos: list.isList ? (ord ? (ord / list.items.length).toFixed(2) : "") : (first / L).toFixed(2),
+      retrieval: !!(ret.comps && ret.comps[group.name]),
+    });
+  }
+  comps.sort((a, b) => a.first - b.first);
+  const top3 = comps.slice(0, 3).map(c => c.name).join(", ");
+  const compsFull = comps.map(c => c.name + "(" + c.count + (c.ordinal ? "·第" + c.ordinal : "") + ")").join(", ");
+
+  // 高亮预览
+  const allMarks = brandHits.map(h => ({ ...h, cls: "brand" }));
+  for (const group of cfg.compGroups) for (const h of dedupHits(findAll(norm, group.needles))) allMarks.push({ ...h, cls: "comp" });
+  allMarks.sort((a, b) => a.index - b.index);
+  let html = "", cursor = 0, lastEnd = -1;
+  for (const m of allMarks) {
+    if (m.index < lastEnd) continue;
+    html += escapeHtml(body.slice(cursor, m.index));
+    html += `<mark class="${m.cls}">${escapeHtml(body.slice(m.index, m.index + m.len))}</mark>`;
+    cursor = m.index + m.len; lastEnd = cursor;
+  }
+  html += escapeHtml(body.slice(cursor));
+
+  // 来源情报：正文内联 URL + 检索/来源层 URL，去重（同 URL 优先记为 body 层），上限 50 条
+  const sourceMap = new Map();
+  for (const u of urls) sourceMap.set(u, { url: u, layer: "body" });
+  for (const u of retUrls) if (!sourceMap.has(u)) sourceMap.set(u, { url: u, layer: "retrieval" });
+  const sources = [...sourceMap.values()].slice(0, 50);
+
+  return {
+    brandName: cfg.brandName, status, mentioned: mentioned ? "是" : "否", hitCount: brandHits.length,
+    citedOnly, retrievalHit: retrievalHit ? "是" : "否", hasRetrieval: ret.has,
+    isList: list.isList, listTotal: listTotalOverride != null ? listTotalOverride : list.items.length, ordCell, normPos, posLabel, posDetail,
+    brandUrls, brandSnippet, comps, compsFull, top3, previewHtml: html, sources,
+  };
+}
+
+function judgeSingle() {
+  const cfg = getConfig(); if (!cfg) return;
+  const engine = document.getElementById("engine").value;
+  const raw = document.getElementById("singleAnswer").value;
+  if (!raw.trim()) { alert("先粘贴 " + engine + " 的回答"); return; }
+  const note = document.getElementById("sNote").value.trim();
+  if (!note) {
+    alert("先填「这条问的问题」：写你问 AI 的原话。工具靠它把这条记录对上问题清单和测试矩阵，测试顺序不用和清单一致。");
+    document.getElementById("sNote").focus();
+    return;
+  }
+  const { body, retrieval } = autoSplit(raw, engine);   // 主框：按引擎自动分离正文与检索/来源
+  // 独立「来源/检索面板」框：全部内容 + 其 harvest 链接都只算检索层，永不进正文
+  const srcPanel = document.getElementById("sourcesPanel").value;
+  const retrievalCombined = [retrieval, srcPanel].filter(s => s && s.trim()).join("\n");
+  const a = analyze(body, cfg, retrievalCombined);
+  // 2026-10-19：ChatGPT 来源面板中间和底部都可能折叠成"再显示 N 个"，粘进来的文字里还有这几个字，说明没展开完
+  a.foldWarn = /再显示\s*\d+\s*个|显示更多\s*\d+|show\s+\d+\s+more/i.test(raw + "\n" + srcPanel);
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  // 以 Step 3 里填的问题为准：在清单里找原话一致的那一题（忽略空格标点）；清单里没有就记原话本身
+  const listed = matchQuestion(note);
+  const qid = listed || note;
+  // 同一道题、同一个引擎已经测过：测错了重测就替换，想看波动就都保留
+  const same = queue.filter(r => normQ(r.qid || r.note) === normQ(qid) && (r.engine || "ChatGPT") === engine);
+  if (same.length && confirm(`「${qid}」在 ${engine} 已经测过 ${same.length} 次。\n\n点「确定」：用这次的结果替换之前的（测错了重测，选这个）\n点「取消」：两次都保留（想看同一题多测几次的波动，选这个）`)) {
+    for (const r of same) queue.splice(queue.indexOf(r), 1);
+  }
+  const row = { id, ts: Date.now(), qid, note, engine, ...a };
+  lastInput = { id, raw, srcPanel, note, engine };   // 只存在内存里，供"撤销这条"把原文放回输入框
+  sessionPreviews[id] = a.previewHtml;
+  pendingQid = "";
+  queue.push(row);
+  renderResultCard(row);
+  document.getElementById("singleAnswer").value = "";
+  document.getElementById("sourcesPanel").value = "";
+  // 判完清空问题栏：下一条必须重新填（或点矩阵格子自动带入），避免沿用上一题的问题记错；
+  // renderAll（内含 saveStore）放在清空之后执行，存进 localStorage 的草稿跟屏幕一致
+  document.getElementById("sNote").value = "";
+  renderAll();
+  toast(listed || !getQuestions().length ? "判定完成，见下方结果卡" : "判定完成。这个问题不在 Step 2 的问题清单里，测试矩阵不会显示它，可以把原话加进清单");
+}
+
+// 状态 → 结果卡的图标 / 配色 / 大白话解释
+function statusMeta(s, engine) {
+  const eng = engine || "ChatGPT";
+  if (s === "正文提及") return { cls: "st-yes", icon: "✅", title: "被 " + eng + " 正文点名了", desc: "品牌名直接出现在回答正文里，这是最强的可见度。" };
+  if (s === "仅被引") return { cls: "st-cite", icon: "🔗", title: "只被引用了链接，正文没点名", desc: "官网被当作来源引用，但回答正文里没写你的名字。" };
+  if (s === "仅检索到") return { cls: "st-ret", icon: "🔍", title: "只被检索到，没被引用", desc: "只出现在搜索/来源里，正文和引用都没用到你。" };
+  if (s === "无引用数据") return { cls: "st-na", icon: "⚪", title: "无法判断是否被引用", desc: "这条回答没有任何链接、也没填检索层，只能确认正文没点名你。" };
+  return { cls: "st-no", icon: "❌", title: "这条回答里完全没出现", desc: "正文、引用、检索里都没找到你的品牌。" };
+}
+function statusCls(s) { return s === "正文提及" ? "yes" : (s === "未出现" ? "no" : ""); }
+
+function posText(q) {
+  if (q.mentioned !== "是") return "—";
+  if (q.isList) {
+    const ord = q.ordCell.split("/")[0];
+    return ord === "—" ? ("在列表里，但不在编号项内（共 " + q.listTotal + " 项）") : ("编号列表里排第 " + ord + " / 共 " + q.listTotal + " 个");
+  }
+  return "正文" + q.posLabel + "（约 " + q.posDetail + "）";
+}
+function compOrderText(q) {
+  if (!q.comps.length) return "（没发现你填的竞品）";
+  return q.comps.map((c, i) => (i + 1) + ". " + c.name + (c.count > 1 ? " ×" + c.count : "")).join("　");
+}
+
+function renderResultCard(q) {
+  const m = statusMeta(q.status, q.engine);
+  const rows = [];
+  rows.push(["出现位置", escapeHtml(posText(q))]);
+  rows.push(["竞品出现顺序", escapeHtml(compOrderText(q))]);
+  rows.push(["被引官网链接", q.brandUrls.length ? q.brandUrls.map(escapeHtml).join("<br>") : "无"]);
+  if (q.hasRetrieval) rows.push(["检索 / 来源层", q.retrievalHit === "是" ? "已被检索到" : "未被检索到"]);
+  if (q.foldWarn) rows.push(["提醒", "粘进来的内容里还有「再显示 N 个」，来源列表没展开完，数据可能不全。展开到每处都变成「收起」再复制一次更稳。"]);
+  if (q.status === "正文提及") rows.push(["负面提及", `<label style="cursor:pointer;display:inline-flex;gap:8px;align-items:center"><input type="checkbox" ${q.negative ? "checked" : ""} onchange="toggleNegative('${q.id}', this.checked)"> 这次是负面提及（比如被当成反面例子、只出现在缺点里）</label>`]);
+  const rowsHtml = rows.map(r => `<div class="rr"><span class="rr-k">${r[0]}</span><span class="rr-v">${r[1]}</span></div>`).join("");
+  document.getElementById("resultBox").innerHTML = `
+    <div class="result-banner ${m.cls}">
+      <div class="rb-icon">${m.icon}</div>
+      <div class="rb-text"><div class="rb-title">${m.title}</div><div class="rb-desc">${m.desc}</div></div>
+    </div>
+    <div class="result-rows">${rowsHtml}</div>
+    <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="btn small danger" onclick="undoRecord('${q.id}')">撤销这条</button><span class="hint">粘错了、问题填错了，撤销后原文会放回输入框，改好再点「看结果」；其它记录不受影响。</span></div>
+    <details style="margin-top:12px"><summary style="cursor:pointer;font-size:12px;color:var(--amber);font-weight:600">看原文（高亮命中：品牌 / 竞品）</summary><div class="preview">${q.previewHtml}</div></details>`;
+  const card = document.getElementById("resultCard");
+  card.style.display = "";
+  card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+// 负面提及只能人工判断：工具按"正文提及"记，用户勾选后单独标出，CSV 和记分卡里都能看到
+function toggleNegative(id, on) {
+  const q = queue.find(r => r.id === id); if (!q) return;
+  q.negative = !!on; renderAll();
+  toast(on ? "已标为负面提及" : "已取消负面提及标记");
+}
+
+function fmtTime(ts) {
+  if (!ts) return "—";
+  const d = new Date(ts);
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getMonth()+1}-${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function renderQueue() {
+  const tb = document.querySelector("#qTable tbody");
+  tb.innerHTML = queue.map((q, i) => {
+    const preview = q.previewHtml != null ? q.previewHtml : sessionPreviews[q.id];
+    const previewCell = preview != null
+      ? `<details><summary>看</summary><div class="preview">${preview}</div></details>`
+      : (q.brandSnippet
+          ? `<details><summary>看命中片段</summary><div class="preview">${escapeHtml(q.brandSnippet)}<div class="hint" style="margin-top:6px">完整原文仅当次会话可看，这是命中处的片段（跨会话保留）</div></div></details>`
+          : `<span class="hint">仅当次会话可看</span>`);
+    const sources = q.sources || [];
+    const sourcesCell = sources.length
+      ? `<details><summary>${sources.length} 个</summary>${sources.map(s => `<div><a href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.url)}</a></div>`).join("")}</details>`
+      : "—";
+    return `
+    <tr>
+      <td><button class="btn small danger" onclick="removeRow('${q.id}')">删除</button></td>
+      <td>${escapeHtml(fmtTime(q.ts))}</td>
+      <td class="qt-trunc" title="${escapeHtml(q.qid || "")}">${escapeHtml(q.qid || "—")}</td>
+      <td class="qt-trunc" title="${escapeHtml(q.note)}">${escapeHtml(q.note)}</td>
+      <td>${escapeHtml(q.engine || "ChatGPT")}</td>
+      <td class="qt-trunc ${statusCls(q.status)}">${escapeHtml(q.status)}${q.negative ? " · 负面" : ""}</td>
+      <td>${escapeHtml(q.mentioned)}</td>
+      <td>${escapeHtml(q.citedOnly)}</td>
+      <td>${escapeHtml(q.hasRetrieval ? q.retrievalHit : "—")}</td>
+      <td class="qt-trunc" title="${escapeHtml(posText(q))}">${escapeHtml(posText(q))}</td>
+      <td class="qt-trunc" title="${escapeHtml(compOrderText(q))}">${escapeHtml(compOrderText(q))}</td>
+      <td>${q.brandUrls.length ? q.brandUrls.map(escapeHtml).join("<br>") : "—"}</td>
+      <td>${sourcesCell}</td>
+      <td>${previewCell}</td>
+    </tr>`;
+  }).join("");
+  document.getElementById("qCount").textContent = queue.length;
+}
+function undoRecord(id) {
+  const i = queue.findIndex(r => r.id === id); if (i === -1) return;
+  queue.splice(i, 1);
+  if (lastInput && lastInput.id === id) {
+    if (window.__setEngine) window.__setEngine(lastInput.engine);
+    document.getElementById("singleAnswer").value = lastInput.raw;
+    document.getElementById("sourcesPanel").value = lastInput.srcPanel;
+    document.getElementById("sNote").value = lastInput.note;
+  }
+  document.getElementById("resultCard").style.display = "none";
+  renderAll();
+  const step3 = document.getElementById("stepPaste"); if (step3) step3.scrollIntoView({ behavior: "smooth", block: "start" });
+  toast(lastInput && lastInput.id === id ? "已撤销这条，原文已放回输入框" : "已撤销这条");
+}
+// 测试记录表里删单条：按 id 删，只删这一条，其它问题不用重测
+function removeRow(id) {
+  const q = queue.find(r => r.id === id); if (!q) return;
+  if (!confirm(`删除这条记录？\n\n${q.qid || q.note} · ${q.engine || "ChatGPT"} · ${q.status}\n\n只删这一条，其它记录不受影响。`)) return;
+  queue.splice(queue.indexOf(q), 1);
+  renderAll();
+}
+function clearQueue() {
+  if (confirm("清空全部测试记录？（品牌配置和问题清单会保留）")) {
+    queue.length = 0;
+    renderAll();
+    document.getElementById("resultCard").style.display = "none";
+  }
+}
+
+const ROW_HEADER = ["备注", "引擎", "状态", "品牌提及", "仅被引", "检索层命中", "出现位置", "被引官网链接", "竞品出现顺序", "命中原文片段", "时间", "问题", "引用来源链接", "负面提及"];
+function rowFields(q, urlSep) {
+  urlSep = urlSep || " ";
+  return [q.note, (q.engine || "ChatGPT"), q.status, q.mentioned, q.citedOnly, (q.hasRetrieval ? q.retrievalHit : ""),
+    posText(q), q.brandUrls.join(urlSep), compOrderText(q), q.brandSnippet,
+    fmtTime(q.ts), (q.qid || ""), (q.sources || []).map(s => s.url).join(urlSep), (q.negative ? "是" : "")];
+}
+function copyAll() {
+  if (!queue.length) { alert("队列为空"); return; }
+  // TSV 剪贴板没有引号转义，多个链接必须用空格连接，用换行会被 Excel/表格软件当成新的一行导致错位
+  const tsv = queue.map(q => rowFields(q, " ").join("\t")).join("\n");
+  navigator.clipboard.writeText(tsv).then(() => toast(`已复制 ${queue.length} 行`));
+}
+function downloadCSV() {
+  if (!queue.length) { alert("队列为空"); return; }
+  const header = ROW_HEADER;
+  const esc = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+  const csv = "\uFEFF" + [header, ...queue.map(q => rowFields(q, "\n"))].map(r => r.map(esc).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "geo_judge_results.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1600);
+}
+
+/* ===== PURE-BEGIN ===== */
+// 1:1 等长归一化（小写 A-Z + 全角→半角 + 全角空格→半角），码元数不变，命中索引可直接映射回原文
+function normalizeText(s) {
+  let out = "";
+  for (let i = 0; i < s.length; i++) {
+    let c = s.charCodeAt(i);
+    if (c === 0x3000) c = 0x20;                      // 全角空格
+    else if (c >= 0xFF01 && c <= 0xFF5E) c -= 0xFEE0; // 全角 ASCII → 半角
+    if (c >= 0x41 && c <= 0x5A) c += 0x20;            // A-Z → a-z
+    out += String.fromCharCode(c);
+  }
+  return out;
+}
+
+const STATUSES = ["正文提及", "仅被引", "仅检索到", "无引用数据", "未出现"];
+
+function pct(x) { return x == null ? "—" : Math.round(x * 100) + "%"; }
+
+function computeStats(records) {
+  const N = records.length;
+  const stats = { N, insufficient: N < 5 };
+  if (!N) return stats;
+
+  const mentionedCount = records.filter(r => r.status === "正文提及").length;
+  stats.visRate = mentionedCount / N;
+
+  const withData = records.filter(r => r.status !== "无引用数据");
+  const citedCount = withData.filter(r => (r.brandUrls || []).length > 0).length;
+  stats.citeRate = withData.length ? citedCount / withData.length : null;
+
+  const withRetrieval = records.filter(r => r.hasRetrieval);
+  const retrievalHitCount = withRetrieval.filter(r => r.retrievalHit === "是").length;
+  stats.retrievalRate = withRetrieval.length ? retrievalHitCount / withRetrieval.length : null;
+
+  stats.statusDist = {};
+  for (const s of STATUSES) stats.statusDist[s] = { count: 0, pct: 0 };
+  for (const r of records) if (stats.statusDist[r.status]) stats.statusDist[r.status].count++;
+  for (const s of STATUSES) stats.statusDist[s].pct = N ? stats.statusDist[s].count / N : 0;
+
+  // SOV / 出现率：按「每条记录是否出现」计 1，不按出现次数（防一条啰嗦回答刷高份额）
+  const brandName = records[0].brandName;
+  const compNames = new Set();
+  for (const r of records) for (const c of (r.comps || [])) compNames.add(c.name);
+  const presence = { [brandName]: mentionedCount };
+  for (const name of compNames) presence[name] = 0;
+  for (const r of records) for (const c of (r.comps || [])) presence[c.name]++;
+  const totalPresence = Object.values(presence).reduce((a, b) => a + b, 0);
+  stats.sov = totalPresence ? presence[brandName] / totalPresence : null;
+  stats.presenceRows = Object.keys(presence)
+    .map(name => ({ name, isBrand: name === brandName, count: presence[name], rate: presence[name] / N }))
+    .sort((a, b) => b.count - a.count);
+
+  // 平均位次：列表型/叙述型语义不同，分开算
+  const listMentioned = records.filter(r => r.status === "正文提及" && r.isList && r.ordCell && r.ordCell.split("/")[0] !== "—");
+  if (listMentioned.length) {
+    const avgOrd = listMentioned.reduce((s, r) => s + Number(r.ordCell.split("/")[0]), 0) / listMentioned.length;
+    const avgTotal = listMentioned.reduce((s, r) => s + r.listTotal, 0) / listMentioned.length;
+    stats.avgListPos = { n: listMentioned.length, avgOrd, avgTotal };
+  }
+  const narrMentioned = records.filter(r => r.status === "正文提及" && !r.isList && r.normPos !== "");
+  if (narrMentioned.length) {
+    const avgP = narrMentioned.reduce((s, r) => s + Number(r.normPos), 0) / narrMentioned.length;
+    stats.avgNarrPos = { n: narrMentioned.length, avgPct: Math.round(avgP * 100) };
+  }
+
+  // 按引擎覆盖矩阵
+  const engines = [...new Set(records.map(r => r.engine || "ChatGPT"))];
+  stats.engineMatrix = engines.map(eng => {
+    const rs = records.filter(r => (r.engine || "ChatGPT") === eng);
+    const counts = {}; for (const s of STATUSES) counts[s] = 0;
+    for (const r of rs) if (counts[r.status] != null) counts[r.status]++;
+    return {
+      engine: eng, n: rs.length, counts,
+      visRate: rs.length ? rs.filter(r => r.status === "正文提及").length / rs.length : null,
+      insufficient: rs.length < 3,
+    };
+  });
+
+  return stats;
+}
+
+const ADVICE_RULES = [
+  {
+    id: "low-sample",
+    when: s => s.N < 5,
+    title: "样本不足，结论还不可靠",
+    diag: "少于 5 条记录时，任何百分比都可能只是巧合。",
+    actions: ["用上方的测试计划列出 5-10 个客户会问的问题，覆盖至少 3 个主力引擎再看结论"],
+    links: [{ href: "#planCard", text: "去测试计划" }],
+  },
+  {
+    id: "crawl-issue",
+    when: s => s.N >= 5 && (s.statusDist["未出现"].pct + s.statusDist["无引用数据"].pct) >= 0.5 && s.retrievalRate != null && s.retrievalRate < 0.3,
+    title: "可能是可抓取性 / 收录问题：AI 根本没检索到你",
+    diag: "一半以上的测试里，AI 既没在正文提到你，检索层也很少命中。问题大概率不在内容质量，而在 AI 能不能先找到你。",
+    actions: ["检查 robots.txt 是否放行主流 AI 爬虫", "确认站点有 llms.txt", "确认已提交 IndexNow / Bing 收录"],
+    links: [
+      { href: "/skills/geo-audit", text: "GEO 诊断 Skill" },
+      { href: "/blog/ai-crawler-404-llms-txt/", text: "AI 爬虫 404 与 llms.txt" },
+      { href: "/blog/chatgpt-visibility-bing-indexnow/", text: "ChatGPT 可见度与 Bing IndexNow" },
+      { href: "/blog/cloudflare-blocks-ai-crawlers/", text: "Cloudflare 误拦 AI 爬虫" },
+    ],
+  },
+  {
+    id: "retrieved-not-cited",
+    when: s => s.N >= 5 && s.statusDist["仅检索到"].pct >= 0.3,
+    title: "被抓到了，但内容没被采信",
+    diag: "AI 检索到了你的页面，却没有把内容用进正文。多半是内容形式不利于被直接摘取。",
+    actions: ["把结论改成答案优先的写法，前几句就给出直接结论", "补充可被独立摘取的要点段落", "加强作者/来源可信度信号"],
+    links: [
+      { href: "/blog/geo-answer-first-writing/", text: "GEO 答案优先写作法" },
+      { href: "/blog/geo-how-ai-selects-answers/", text: "AI 怎么选答案" },
+      { href: "/blog/geo-eeat-trust-authority/", text: "GEO 与 EEAT" },
+    ],
+  },
+  {
+    id: "cited-not-named",
+    when: s => s.N >= 5 && s.statusDist["仅被引"].pct >= 0.3,
+    title: "链接被引用了，但品牌名没进正文",
+    diag: "AI 用了你的官网作为来源，却没在回答里点出你的品牌名，用户读到答案未必注意到你。",
+    actions: ["让品牌名与结论直接绑定出现，比如标题或首段就点名", "补充 Organization 结构化数据"],
+    links: [
+      { href: "/blog/geo-micro-answer-pages/", text: "GEO 微答案页" },
+      { href: "/blog/geo-schema-structured-data/", text: "结构化数据与 GEO" },
+    ],
+  },
+  {
+    id: "mentioned-but-low-rank",
+    when: s => s.N >= 5 && s.statusDist["正文提及"].pct >= 0.4 && (
+      (s.avgNarrPos && s.avgNarrPos.avgPct > 60) ||
+      (s.avgListPos && (s.avgListPos.avgOrd / s.avgListPos.avgTotal) > 0.5)
+    ),
+    title: "提得到，但排得靠后",
+    diag: "品牌确实出现在回答里，但平均位置偏后，用户往往只看前几条。",
+    actions: ["补充社会证明或评测背书类内容", "保持内容新鲜度，定期更新数据和案例"],
+    links: [
+      { href: "/blog/geo-social-proof-user-reviews/", text: "GEO 社会证明" },
+      { href: "/blog/geo-content-freshness-update/", text: "内容新鲜度与更新" },
+    ],
+  },
+  {
+    id: "engine-lagging",
+    when: s => s.N >= 5 && s.engineMatrix.some(e => !e.insufficient && s.visRate != null && (s.visRate - e.visRate) >= 0.3 - 1e-9),
+    title: "有引擎明显掉队",
+    diag: "整体可见率与某个引擎差距很大，说明该引擎的主要信息源渠道跟你没对上。",
+    actions: ["排查该引擎主要信息源（搜索引擎/百科/社区）里你的存在感"],
+    links: [
+      { href: "/blog/geo-ai-information-sources/", text: "AI 的信息来源" },
+      { href: "/blog/geo-china-vs-overseas/", text: "国内外 AI 引擎差异" },
+    ],
+  },
+  {
+    id: "competitor-lead",
+    when: s => {
+      if (!s.N || s.N < 5) return false;
+      if (!s.presenceRows || s.presenceRows.length < 2) return false;
+      const brandRow = s.presenceRows.find(r => r.isBrand);
+      const top = s.presenceRows[0];
+      return brandRow && top.name !== brandRow.name && top.count > brandRow.count;
+    },
+    title: "竞品占了你的位置",
+    diag: "有竞品的出现率高于你，先看它是从哪些渠道被引用的。",
+    actions: ["查看下方的引用来源情报，找竞品被引的渠道逐个铺内容"],
+    links: [
+      { href: "#sourceCard", text: "看引用来源情报" },
+      { href: "/blog/ai-competitor-research-7-places/", text: "AI 竞品调研 7 个地方" },
+    ],
+  },
+  {
+    id: "no-citation-data",
+    when: s => s.N >= 5 && s.statusDist["无引用数据"].pct >= 0.4,
+    title: "很多记录判不出引用层，多半是用了引擎自带的复制按钮",
+    diag: "「无引用数据」占比较高时，通常是复制方式漏了来源信息，不是 AI 真的没有引用。",
+    actions: ["按 Step 3 对应引擎的复制说明重新粘贴，多数引擎不建议用自带的 Copy/复制按钮"],
+    links: [{ href: "#stepPaste", text: "看复制说明" }],
+  },
+  {
+    id: "healthy",
+    when: s => s.N >= 5 && s.statusDist["正文提及"].pct >= 0.7,
+    title: "表现健康",
+    diag: "多数测试里品牌都被正文提及，继续保持并做周期性监测即可。",
+    actions: ["建立周期性监测节奏，AI 推荐存在天然波动，不代表退步"],
+    links: [
+      { href: "/blog/geo-ai-recommendation-fluctuates/", text: "AI 推荐为什么会波动" },
+      { href: "/blog/geo-roadmap-crawl-content-authority/", text: "GEO 路线图" },
+    ],
+  },
+];
+function computeAdvice(stats) {
+  if (!stats || !stats.N) return [];
+  const hits = ADVICE_RULES.filter(r => { try { return r.when(stats); } catch (e) { return false; } });
+  return hits.slice(0, 3);
+}
+
+function hostnameOf(url) {
+  try {
+    let h = url.split("/")[2] || "";
+    h = h.toLowerCase().replace(/^www\./, "");
+    return h;
+  } catch (e) { return ""; }
+}
+function computeSources(records, cfg) {
+  const brandDomain = cfg.brandDomain || "";
+  const compDomains = (cfg.compGroups || []).flatMap(g => g.needles).filter(Boolean);
+  const rows = {};
+  for (const r of records) {
+    const seenHosts = new Set();
+    for (const s of (r.sources || [])) {
+      const host = hostnameOf(s.url);
+      if (!host) continue;
+      if (!rows[host]) rows[host] = { host, count: 0, urlSet: new Set(), engines: new Set(), tag: "第三方渠道" };
+      const row = rows[host];
+      if (!seenHosts.has(host)) { row.count++; seenHosts.add(host); }
+      row.urlSet.add(s.url);
+      row.engines.add(r.engine || "ChatGPT");
+      const normHost = normalizeText(host);
+      if (brandDomain && normHost.indexOf(brandDomain) !== -1) row.tag = "品牌官网";
+      else if (row.tag !== "品牌官网" && compDomains.some(d => d && normHost.indexOf(d) !== -1)) row.tag = "竞品官网";
+    }
+  }
+  return Object.values(rows)
+    .map(r => ({ host: r.host, count: r.count, engines: [...r.engines], examples: [...r.urlSet].slice(0, 3), tag: r.tag }))
+    .sort((a, b) => b.count - a.count);
+}
+/* ===== PURE-END ===== */
+
+// 问题按原话对上清单：忽略空格、标点和大小写（"OKR 管理工具哪个好" 和 "OKR管理工具哪个好？" 算同一题），不看顺序
+function normQ(s) { return String(s || "").replace(/[\s，,。.？?！!、：:；;"“”'‘’（）()【】\[\]]/g, "").toLowerCase(); }
+function matchQuestion(text) { const k = normQ(text); if (!k) return ""; return getQuestions().find(q => normQ(q) === k) || ""; }
+function getQuestions() {
+  const el = document.getElementById("qList");
+  if (!el) return [];
+  const seen = new Set(), out = [];
+  for (const line of el.value.split("\n")) {
+    const t = line.trim();
+    if (t && !seen.has(t)) { seen.add(t); out.push(t); }
+  }
+  return out;
+}
+function saveQuestions() { renderAll(); }
+
+function filteredQueue() {
+  const cfg = getConfigSilent();
+  if (!cfg) return { records: [], otherCount: 0, cfg: null };
+  const records = queue.filter(r => r.brandName === cfg.brandName);
+  return { records, otherCount: queue.length - records.length, cfg };
+}
+
+function renderScorecard() {
+  const card = document.getElementById("scorecardCard");
+  card.style.display = "";
+  const { records, otherCount } = filteredQueue();
+  document.getElementById("scoreCount").textContent = records.length;
+  if (!records.length) {
+    document.getElementById("scorecardBody").innerHTML = `<div class="card-empty">还没有测试记录。测几条不同引擎的回答后，这里会自动出现可见率、SOV、平均位次和引擎覆盖矩阵。</div>`;
+    renderCompare(records);
+    return;
+  }
+  const s = computeStats(records);
+  const needMore = `样本不足 · 再测 ${5 - s.N} 条即可出分`;
+  const tile = (label, val) => `
+    <div class="metric-tile">
+      <div class="metric-label">${escapeHtml(label)}</div>
+      <div class="metric-value">${s.insufficient ? "—" : val}</div>
+      ${s.insufficient ? `<div class="metric-note">${needMore}</div>` : ""}
+    </div>`;
+
+  let html = "";
+  if (otherCount > 0) html += `<div class="hint" style="margin-bottom:10px">已按当前品牌过滤，另有 ${otherCount} 条其它品牌的历史记录</div>`;
+  html += `<div class="metric-grid">`;
+  html += tile("可见率（正文提及）", pct(s.visRate));
+  html += tile("被引率", pct(s.citeRate));
+  html += tile("检索命中率", pct(s.retrievalRate));
+  html += tile("SOV（份额，按出现与否计）", pct(s.sov));
+  html += `</div>`;
+  const negN = records.filter(r => r.negative).length;
+  html += `<div class="hint" style="margin:-6px 0 16px">口径：被引率 = 官网链接出现在正文或来源列表里；检索命中率 = 检索 / 来源层里出现品牌名或官网域名。${negN ? `正文提及里有 ${negN} 条被你标成了负面提及。` : ""}</div>`;
+
+  if (s.presenceRows && s.presenceRows.length) {
+    const maxRate = Math.max(...s.presenceRows.map(r => r.rate), 0.0001);
+    html += `<div class="sov-title">出现率对比（自家 vs 竞品）</div>`;
+    html += s.presenceRows.map(r => `
+      <div class="sov-row">
+        <span class="sov-name${r.isBrand ? " sov-brand" : ""}">${escapeHtml(r.name)}</span>
+        <div class="sov-bar-wrap"><div class="sov-bar${r.isBrand ? " sov-bar-brand" : ""}" style="width:${Math.max(2, r.rate / maxRate * 100)}%"></div></div>
+        <span class="sov-pct">${pct(r.rate)}</span>
+      </div>`).join("");
+  }
+
+  if (s.avgListPos || s.avgNarrPos) {
+    html += `<div class="sov-title">平均出现位次</div><div class="pos-summary">`;
+    if (s.avgListPos) html += `<div>列表型 ${s.avgListPos.n} 条 · 平均第 ${s.avgListPos.avgOrd.toFixed(1)} / ${s.avgListPos.avgTotal.toFixed(1)} 位</div>`;
+    if (s.avgNarrPos) html += `<div>叙述型 ${s.avgNarrPos.n} 条 · 平均出现在正文 ${s.avgNarrPos.avgPct}% 处</div>`;
+    html += `</div>`;
+  }
+
+  if (s.engineMatrix && s.engineMatrix.length) {
+    html += `<div class="sov-title">按引擎覆盖矩阵</div>
+      <div class="queue-wrap"><table><thead><tr><th>引擎</th><th>测试数</th>${STATUSES.map(st => `<th>${escapeHtml(st)}</th>`).join("")}<th>可见率</th></tr></thead><tbody>` +
+      s.engineMatrix.map(e => `<tr>
+        <td>${escapeHtml(e.engine)}</td><td>${e.n}</td>${STATUSES.map(st => `<td>${e.counts[st]}</td>`).join("")}
+        <td>${e.insufficient ? "样本不足" : pct(e.visRate)}</td>
+      </tr>`).join("") + `</tbody></table></div>`;
+  }
+
+  document.getElementById("scorecardBody").innerHTML = html;
+  renderCompare(records);
+}
+
+function renderCompare(records) {
+  const box = document.getElementById("compareBody");
+  if (!box) return;
+  const dateEl = document.getElementById("compareDate");
+  const val = dateEl ? dateEl.value : "";
+  if (!val) { box.innerHTML = `<div class="hint">选择一个日期即可对比优化前后的表现</div>`; return; }
+  const cutoff = new Date(val + "T00:00:00").getTime();
+  const before = records.filter(r => (r.ts || 0) < cutoff);
+  const after = records.filter(r => (r.ts || 0) >= cutoff);
+  if (!before.length || !after.length) {
+    box.innerHTML = `<div class="hint">这个日期前后都要有测试记录才能对比（优化前 ${before.length} 条 · 优化后 ${after.length} 条）</div>`;
+    return;
+  }
+  const sb = computeStats(before), sa = computeStats(after);
+  const row = (label, vb, va) => `<div class="sov-row"><span class="sov-name">${escapeHtml(label)}</span><span class="sov-pct">${vb}</span><span style="width:16px;text-align:center;color:var(--muted)">→</span><span class="sov-pct" style="color:var(--amber);font-weight:700">${va}</span></div>`;
+  box.innerHTML = `
+    <div class="hint" style="margin-bottom:8px">优化前 ${before.length} 条 → 优化后 ${after.length} 条</div>
+    ${row("可见率", pct(sb.visRate), pct(sa.visRate))}
+    ${row("被引率", pct(sb.citeRate), pct(sa.citeRate))}
+    ${row("检索命中率", pct(sb.retrievalRate), pct(sa.retrievalRate))}
+    ${row("SOV", pct(sb.sov), pct(sa.sov))}`;
+}
+
+function renderAdvice() {
+  const card = document.getElementById("adviceCard");
+  card.style.display = "";
+  const { records } = filteredQueue();
+  if (!records.length) {
+    document.getElementById("adviceBody").innerHTML = `<div class="card-empty">测过几条后，这里会根据结果分布自动给出针对性的下一步行动建议。</div>`;
+    return;
+  }
+  const advice = computeAdvice(computeStats(records));
+  if (!advice.length) {
+    document.getElementById("adviceBody").innerHTML = `<div class="card-empty">当前结果比较均衡，暂时没有特别突出的问题。继续积累测试样本，建议会更精准。</div>`;
+    return;
+  }
+  document.getElementById("adviceBody").innerHTML = advice.map(a => `
+    <div class="advice-item">
+      <div class="advice-title">${escapeHtml(a.title)}</div>
+      <div class="advice-diag">${escapeHtml(a.diag)}</div>
+      <ul class="advice-actions">${a.actions.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+      <div class="advice-links">${a.links.map(l => `<a class="advice-link" href="${escapeHtml(l.href)}">${escapeHtml(l.text)} →</a>`).join("")}</div>
+    </div>`).join("");
+}
+
+function renderSources() {
+  const card = document.getElementById("sourceCard");
+  card.style.display = "";
+  const { records, cfg } = filteredQueue();
+  if (!cfg) {
+    document.getElementById("sourceBody").innerHTML = `<div class="card-empty">先在上方填写品牌名，测过几条后这里会汇总 AI 实际引用过的第三方域名，按被引频次排序。</div>`;
+    return;
+  }
+  if (!records.length) {
+    document.getElementById("sourceBody").innerHTML = `<div class="card-empty">还没有测试记录。测过带检索/来源内容的回答后，这里会列出 AI 实际引用过的第三方域名。</div>`;
+    return;
+  }
+  const rows = computeSources(records, cfg);
+  if (!rows.length) {
+    document.getElementById("sourceBody").innerHTML = `<div class="card-empty">这些测试里还没有抓到任何引用链接。粘贴回答时记得带上来源 / 检索面板的内容，工具才能识别引用域名。</div>`;
+    return;
+  }
+  const onlyThird = document.getElementById("srcOnlyThird");
+  const filterOn = onlyThird ? onlyThird.checked : true;
+  const shown = filterOn ? rows.filter(r => r.tag === "第三方渠道") : rows;
+  document.getElementById("sourceBody").innerHTML = shown.length ? `
+    <div class="queue-wrap"><table><thead><tr><th>域名</th><th>被引记录数</th><th>涉及引擎</th><th>示例链接</th></tr></thead><tbody>
+    ${shown.map(r => {
+      const badgeCls = r.tag === "品牌官网" ? "src-badge-brand" : (r.tag === "竞品官网" ? "src-badge-comp" : "src-badge-third");
+      return `<tr>
+      <td>${escapeHtml(r.host)}<span class="src-badge ${badgeCls}">${escapeHtml(r.tag)}</span></td>
+      <td>${r.count}</td>
+      <td>${escapeHtml(r.engines.join(", "))}</td>
+      <td><details><summary>看</summary>${r.examples.map(u => `<div><a href="${escapeHtml(u)}" target="_blank" rel="noopener">${escapeHtml(u)}</a></div>`).join("")}</details></td>
+    </tr>`;
+    }).join("")}
+    </tbody></table></div>` : `<div class="hint">当前过滤下没有符合条件的来源</div>`;
+}
+
+const MATRIX_ENGINES = ["ChatGPT", "Claude", "Perplexity", "Google AI概览", "DeepSeek", "豆包"];
+const ENGINE_LOGO = {
+  "ChatGPT": "https://aimarketinglift.com/assets/images/engine-logos/chatgpt.png",
+  "Claude": "https://aimarketinglift.com/assets/images/engine-logos/claude.png",
+  "Perplexity": "https://aimarketinglift.com/assets/images/engine-logos/perplexity.svg",
+  "Google AI概览": "https://aimarketinglift.com/assets/images/engine-logos/google.svg",
+  "DeepSeek": "https://aimarketinglift.com/assets/images/engine-logos/deepseek.svg",
+  "豆包": "https://aimarketinglift.com/assets/images/engine-logos/doubao.png",
+};
+const STATUS_SHORT = { "正文提及": "✅", "仅被引": "🔗", "仅检索到": "🔍", "无引用数据": "⚪", "未出现": "❌" };
+
+function renderTestMatrix() {
+  const wrap = document.getElementById("testMatrixWrap");
+  if (!wrap) return;
+  const questions = getQuestions();
+  if (!questions.length) { wrap.innerHTML = ""; return; }
+  const { records } = filteredQueue();
+  let covered = 0;
+  const rows = questions.map(q => {
+    const cells = MATRIX_ENGINES.map(eng => {
+      const matches = records.filter(r => (normQ(r.qid) === normQ(q) || normQ(r.note) === normQ(q)) && (r.engine || "ChatGPT") === eng);
+      if (!matches.length) {
+        return `<td><button type="button" class="mx-untested" data-q="${escapeHtml(q)}" data-eng="${escapeHtml(eng)}">未测</button></td>`;
+      }
+      covered++;
+      const latest = matches.reduce((a, b) => (b.ts || 0) > (a.ts || 0) ? b : a);
+      return `<td><button type="button" class="mx-tested" data-q="${escapeHtml(q)}" data-eng="${escapeHtml(eng)}" title="${escapeHtml(latest.status)}">${STATUS_SHORT[latest.status] || "?"}</button></td>`;
+    }).join("");
+    return `<tr><td class="mx-q" title="${escapeHtml(q)}">${escapeHtml(q.length > 20 ? q.slice(0, 20) + "…" : q)}</td>${cells}</tr>`;
+  }).join("");
+  const total = questions.length * MATRIX_ENGINES.length;
+  wrap.innerHTML = `
+    <div class="sov-title">问题 × 引擎 测试矩阵</div>
+    <div class="queue-wrap"><table><thead><tr><th>问题</th>${MATRIX_ENGINES.map(e => `<th><img class="es-logo" src="${ENGINE_LOGO[e]}" alt="">${escapeHtml(e)}</th>`).join("")}</tr></thead>
+    <tbody>${rows}</tbody></table></div>
+    <div class="hint" style="margin-top:8px">已覆盖 ${covered} / ${total} 个组合 · 建议每个问题至少测 3 个主力引擎</div>`;
+}
+function useMatrixCell(qText, engine) {
+  document.getElementById("sNote").value = qText;
+  pendingQid = qText;
+  if (window.__setEngine) window.__setEngine(engine);
+  const step3 = document.getElementById("stepPaste");
+  if (step3) step3.scrollIntoView({ behavior: "smooth", block: "start" });
+  const ta = document.getElementById("singleAnswer");
+  if (ta) ta.focus();
+  toast("已选好问题和引擎，去 AI 里问完粘回来");
+}
+(function () {
+  const wrap = document.getElementById("testMatrixWrap");
+  if (!wrap) return;
+  wrap.addEventListener("click", function (e) {
+    const btn = e.target.closest("button[data-q]");
+    if (!btn) return;
+    useMatrixCell(btn.dataset.q, btn.dataset.eng);
+  });
+})();
+
+function renderAll() {
+  renderQueue();
+  renderScorecard();
+  renderAdvice();
+  renderSources();
+  renderTestMatrix();
+  saveStore();
+}
+
+// 粘贴富文本时自动抽取内联超链接的 URL（纯本地，用剪贴板的 text/html 版本；不联网）
+const APP_HOSTS = /(openai|chatgpt|oaiusercontent|perplexity|gemini|googleusercontent|google|bing|claude|anthropic|deepseek|doubao|volcengine)\./i;
+// 若链接是 AI 产品自身域名的跳转包装（如 claude.ai/redirect?url=… / …?q=… / …?u=…），
+// 解出内嵌的真实外链；否则丢弃。这样直接外链和跳转包装两种形态都能拿到。
+function unwrapRedirect(u) {
+  const host = u.split("/")[2] || "";
+  if (!APP_HOSTS.test(host)) return u;            // 本身就是外链，原样返回
+  try {
+    const q = u.split("?")[1] || "";
+    for (const kv of q.split("&")) {
+      const eq = kv.indexOf("=");
+      if (eq === -1) continue;
+      const val = decodeURIComponent(kv.slice(eq + 1));
+      const m = val.match(/https?:\/\/[^\s"'<>]+/i);
+      if (m && !APP_HOSTS.test((m[0].split("/")[2] || ""))) return m[0];
+    }
+  } catch (e) {}
+  return null;                                    // AI 自身域名且解不出外链 → 弃
+}
+function extractLinksFromHtml(html) {
+  if (!html) return [];
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const urls = [...doc.querySelectorAll("a[href]")].map(a => a.getAttribute("href"))
+    .filter(u => /^https?:\/\//i.test(u))   // 只要真实外链
+    .map(unwrapRedirect)
+    .filter(Boolean);                       // 去掉解不出外链的 AI 自身域名跳转
+  return [...new Set(urls)];
+}
+function attachPasteHarvest(el) {
+  if (!el) return;
+  el.addEventListener("paste", function (e) {
+    const cd = e.clipboardData; if (!cd) return;
+    const text = cd.getData("text/plain");
+    const links = extractLinksFromHtml(cd.getData("text/html"));
+    const newLinks = links.filter(u => text.indexOf(u) === -1);  // 正文里已有的 URL 不重复追加
+    if (!newLinks.length) return;   // 无隐藏链接 → 走默认粘贴
+    e.preventDefault();
+    const block = text + (/\n$/.test(text) ? "" : "\n") + "[引用链接] " + newLinks.join("  ");
+    const s = el.selectionStart, en = el.selectionEnd;
+    el.value = el.value.slice(0, s) + block + el.value.slice(en);
+    el.selectionStart = el.selectionEnd = s + block.length;
+    toast("已自动抽取 " + newLinks.length + " 条引用链接");
+  });
+}
+attachPasteHarvest(document.getElementById("singleAnswer"));
+attachPasteHarvest(document.getElementById("sourcesPanel"));
+
+// 引擎下拉自定义组件：原生 <select> 的 <option> 没法带图片，改成按钮+菜单，
+// 选中后同步写回隐藏的原生 <select id="engine"> 并派发 change 事件，其余代码（getConfig/judgeSingle/下面的 syncTip）完全不用改。
+(function(){
+  const wrap = document.getElementById("engineSelectWrap");
+  const btn = document.getElementById("engineSelectBtn");
+  const btnLogo = document.getElementById("engineSelectBtnLogo");
+  const btnLabel = document.getElementById("engineSelectBtnLabel");
+  const menu = document.getElementById("engineSelectMenu");
+  const hiddenSelect = document.getElementById("engine");
+  const items = [...menu.querySelectorAll(".es-item")];
+
+  function closeMenu(){ menu.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); }
+  function openMenu(){ menu.classList.add("open"); btn.setAttribute("aria-expanded", "true"); }
+
+  function selectValue(val, silent){
+    const item = items.find(i => i.dataset.value === val);
+    if (!item) return;
+    btnLogo.src = item.querySelector("img").src;
+    btnLabel.textContent = val;
+    items.forEach(i => i.setAttribute("aria-selected", i === item ? "true" : "false"));
+    if (hiddenSelect.value !== val) {
+      hiddenSelect.value = val;
+      if (!silent) hiddenSelect.dispatchEvent(new Event("change"));
+    }
+  }
+
+  btn.addEventListener("click", () => { menu.classList.contains("open") ? closeMenu() : openMenu(); });
+  items.forEach(item => {
+    item.addEventListener("click", () => { selectValue(item.dataset.value); closeMenu(); });
+  });
+  document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) closeMenu(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && menu.classList.contains("open")) { closeMenu(); btn.focus(); } });
+
+  selectValue(hiddenSelect.value, true);  // 初始化按钮显示，不触发 change（避免和下面 syncTip() 的首次调用重复）
+  window.__setEngine = selectValue;       // 供测试矩阵点击「未测」时联动选中引擎
+})();
+
+// 按所选引擎，只显示对应引擎的复制说明 + 来源框的 label/提示（六引擎各自独立，互不串）
+(function(){
+  const sel = document.getElementById("engine");
+  const tips = ["ChatGPT", "Claude", "Perplexity", "Google AI概览", "DeepSeek", "豆包"];
+  // 各引擎的「来源/检索面板」框文案（只讲当前引擎）
+  const SRC = {
+    "ChatGPT":       { label: "ChatGPT「查看来源」面板", ph: "回答下方点「…」→「查看来源」，上下两组的「再显示 N 个」都点开到「收起」，整块复制粘到这里，只算检索层、不进正文。" },
+    "Perplexity":    { label: "Perplexity 检索结果列表", ph: "展开「Completed 步骤」，把那份检索结果列表粘到这里，只算检索层、不进正文，来源链接照样自动抓取。" },
+    "Google AI概览": { label: "Google AI概览 右侧「来源」面板", ph: "把右侧「来源」面板粘到这里，只算检索层、不进正文，来源链接照样自动抓取。" },
+    "DeepSeek":      { label: "DeepSeek「搜索结果」完整检索列表", ph: "点正文上方「已阅读 N 个网页」或回答底部「N 个网页」标签（同一份数据），展开右侧完整「搜索结果」面板，把它粘到这里，只算检索层、不进正文，来源链接照样自动抓取。" },
+  };
+  // 豆包/Claude 的来源都跟正文连在同一个内容流里、整段框选就能一起复制完，这个补充框对它们完全用不上，直接隐藏
+  const HIDE_SOURCES_PANEL = new Set(["豆包", "Claude"]);
+  const srcLabel = document.getElementById("srcLabel");
+  const srcBox = document.getElementById("sourcesPanel");
+  const srcWrap = document.getElementById("sourcesPanelWrap");
+  function syncTip(){
+    const cur = sel.value;
+    for (const t of tips){
+      const el = document.getElementById("tip-" + t.replace(/\s+/g, ""));
+      if (el) el.style.display = (t === cur ? "" : "none");
+    }
+    const s = SRC[cur];
+    if (s){ if (srcLabel) srcLabel.textContent = s.label; if (srcBox) srcBox.placeholder = s.ph; }
+    const hide = HIDE_SOURCES_PANEL.has(cur);
+    if (srcWrap) srcWrap.style.display = hide ? "none" : "";
+    if (hide && srcBox && srcBox.value) srcBox.value = "";  // 隐藏时清空残留内容，避免切换引擎后污染下一条记录的检索层
+  }
+  sel.addEventListener("change", syncTip);
+  syncTip();
+})();
+
+// Step1 品牌/竞品配置改动即防抖存本地（debounce 300ms）
+(function () {
+  let t = null;
+  const debouncedSave = () => { clearTimeout(t); t = setTimeout(saveStore, 300); };
+  for (const id of ["brand", "brandDomain", "competitors", "sNote"]) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("input", debouncedSave);
+  }
+})();
+
+initFromStore();
+</script>
+</body>
+</html>

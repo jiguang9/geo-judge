@@ -1,0 +1,14 @@
+{
+  "name": "@jiguang9/geo-judge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GEO visibility judge — paste AI answers, see whether your brand is mentioned, ranked and cited; runs locally in the browser",
+  "scripts": {
+    "test": "node --test tests/"
+  },
+  "author": "jiguang9",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
