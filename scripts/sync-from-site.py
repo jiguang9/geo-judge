@@ -49,6 +49,8 @@ def main():
     html = sub(r"<nav class=\"nav\" id=\"nav\">.*?</nav>\s*<div class=\"nav-drawer\" id=\"navDrawer\">.*?</div>\s*</div>\n", NAV + "\n", html, 1)
     html = sub(r"<div class=\"footer-strip\">.*?</div>", FOOTER, html, 1)
     html = sub(r"<script src=\"/assets/js/nav\.js\"></script>\n", "", html, 1)
+    # GA4 click tracking for the GitHub links; no analytics in the standalone copy
+    html = sub(r"\n/\* GitHub entry clicks .*?\}\)\);\n", "\n", html, 1)
     # the companion skill is open source too, so point at its repo rather than the site page
     html = sub(r'href="/skills/geo-audit"', 'href="https://github.com/jiguang9/geo-audit"', html, 1)
     # remaining site-relative links and assets (favicon, engine logos, consulting) become absolute
