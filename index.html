@@ -196,6 +196,12 @@ textarea { resize: vertical; line-height: 1.6; }
   background: var(--s2); border-radius: 8px; padding: 10px 14px;
   font-size: 12px; color: var(--ink2); margin-bottom: 12px; line-height: 1.7;
 }
+.import-box { background: var(--s1); border: 1px dashed var(--bd); border-radius: 10px; padding: 12px 14px; margin: 4px 0 16px; font-size: 13px; color: var(--ink2); line-height: 1.7; }
+.import-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between; }
+.import-row > div { flex: 1 1 280px; }
+.import-box code { font-family: 'DM Mono', Consolas, monospace; background: var(--s2); padding: 1px 5px; border-radius: 4px; font-size: 11.5px; }
+.import-report { margin-top: 10px; padding: 8px 12px; background: var(--al); border-radius: 8px; font-size: 12.5px; }
+.import-report ul { margin: 6px 0 4px 18px; padding: 0; }
 .fmt code { font-family: 'DM Mono', Consolas, monospace; background: var(--s1); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--bd); }
 
 /* ENGINE-SPECIFIC PASTE TIP (toggles with #engine) */
@@ -407,7 +413,7 @@ details summary { cursor: pointer; font-size: 12px; color: var(--amber); font-we
       <div class="intro-step"><div class="intro-step-num">3</div><div class="intro-step-text"><strong>看汇总记分卡</strong>测几条后自动出可见率、SOV、行动建议</div></div>
     </div>
     <div class="intro-privacy"><span>🔒 纯前端本地处理，不上传任何服务器；测试记录跨会话累积存在本机浏览器（localStorage），可随时一键清空。代码<a href="https://github.com/jiguang9/geo-judge" target="_blank" rel="noopener" data-gh="geo-judge-privacy">已开源</a>，可以自己核对</span></div>
-    <div class="intro-note">当前支持 ChatGPT、Claude、Perplexity、Google AI概览、DeepSeek、豆包 六个引擎，其它大模型与批量模式后续逐步加入。</div>
+    <div class="intro-note">当前支持 ChatGPT、Claude、Perplexity、Google AI概览、DeepSeek、豆包 六个引擎，其它大模型后续逐步加入。已经整理好回答存档表（CSV）的，可以在 Step 3 一次导入、批量判定。</div>
   </div>
 
   <div class="card">
@@ -442,7 +448,19 @@ details summary { cursor: pointer; font-size: 12px; color: var(--amber); font-we
 
   <div class="card" id="stepPaste">
     <h2><span class="step">3</span>选引擎 · 填问题 · 粘贴回答</h2>
-    <label>先选这条回答来自哪个 AI 引擎</label>
+    <div class="import-box">
+      <div class="import-row">
+        <div><b>已经有回答存档表？</b>一次导入整张 CSV，每行按里面的问题、平台、正文和来源判一条，不用一条条粘。</div>
+        <button type="button" class="btn secondary small" onclick="document.getElementById('archiveFile').click()">导入存档表（CSV）</button>
+        <input type="file" id="archiveFile" accept=".csv,text/csv" style="display:none" onchange="importArchive(this)">
+      </div>
+      <details class="hint" style="margin-top:6px">
+        <summary style="cursor:pointer">存档表要什么格式</summary>
+        <div style="margin-top:6px">第一行是表头，一行一条回答。必须有 <code>问题原文</code> <code>平台</code> <code>回答正文</code> <code>来源列表</code> <code>取数状态</code>，可选 <code>档位</code> <code>第几次</code> <code>日期</code> <code>分享链接</code> <code>搜索词</code>（一行一个，算检索层）。平台写 ChatGPT、DeepSeek、豆包这类上面能选的名字。来源列表一行一条 <code>标题 | 域名 | 链接</code>，AI 在正文里用角标引用的，行尾加 <code>| 正文引用</code>。只导入取数状态是「成功」的行，其余列在导入结果里。文件只在你的浏览器里读，不上传。</div>
+      </details>
+      <div id="importReport"></div>
+    </div>
+    <label>或者单条粘贴：先选这条回答来自哪个 AI 引擎</label>
     <div class="engine-select" id="engineSelectWrap">
       <button type="button" class="engine-select-btn" id="engineSelectBtn" aria-haspopup="listbox" aria-expanded="false">
         <img class="es-logo" id="engineSelectBtnLogo" src="https://aimarketinglift.com/assets/images/engine-logos/chatgpt.png" alt="">
@@ -629,7 +647,7 @@ details summary { cursor: pointer; font-size: 12px; color: var(--amber); font-we
             </div>
           </div>
         </div>
-        <div class="faq-engine-note">粘贴前先在 Step 2 的下拉框里选对应引擎，工具会按引擎自动区分正文与来源。其它大模型与一次判多条的批量模式，会在后续版本逐步加入。</div>
+        <div class="faq-engine-note">粘贴前先在 Step 2 的下拉框里选对应引擎，工具会按引擎自动区分正文与来源。其它大模型会在后续版本逐步加入。手上已有回答存档表（CSV）的，可以在 Step 3 一次导入。</div>
       </div>
     </details>
     <details class="faq-item">
@@ -681,7 +699,7 @@ details summary { cursor: pointer; font-size: 12px; color: var(--amber); font-we
     </details>
     <details class="faq-item">
       <summary>是不是要一个问题、一个引擎地手动测？</summary>
-      <p>是的。这个工具是单条判定：每次粘贴一条 AI 回答、点一次「看结果」生成一条记录，没有对接任何 AI 引擎的接口，所以没法帮你自动批量问，需要你自己去各个引擎问完、复制回答、粘贴回来判定。Step 2 的测试计划矩阵是为了让「问题 × 引擎」这套来回流程有清单可循、不容易漏测，点未测格子会自动帮你预填好问题和引擎。攒够几条记录后，汇总记分卡、行动建议、引用来源情报才会给出有统计意义的结论。</p>
+      <p>是的。这个工具是单条判定：每次粘贴一条 AI 回答、点一次「看结果」生成一条记录，没有对接任何 AI 引擎的接口，所以没法帮你自动批量问，需要你自己去各个引擎问完、复制回答、粘贴回来判定。Step 2 的测试计划矩阵是为了让「问题 × 引擎」这套来回流程有清单可循、不容易漏测，点未测格子会自动帮你预填好问题和引擎。攒够几条记录后，汇总记分卡、行动建议、引用来源情报才会给出有统计意义的结论。如果已经把回答整理成回答存档表（CSV，每行一条回答，带问题、平台、正文和来源），可以在 Step 3 点「导入存档表」一次判完。</p>
     </details>
     <details class="faq-item">
       <summary>只测一个引擎、一个问题也能用吗？</summary>
@@ -1032,8 +1050,9 @@ function getConfig() {
   return cfg;
 }
 
-function analyze(text, cfg, retrievalText) {
-  const urls = [...new Set(text.match(urlReg) || [])];
+// citeUrls（选填）：导入存档表时，AI 在正文里用角标引用的网页。角标文字已从正文剔掉，链接在这里补进引用层
+function analyze(text, cfg, retrievalText, citeUrls) {
+  const urls = [...new Set([...(text.match(urlReg) || []), ...(citeUrls || [])])];
   const body = text.replace(urlReg, " ");        // 去 URL 留空格防粘连；后续所有偏移量都基于 body
   const norm = normalizeText(body);
   const L = Math.max(body.length, 1);
@@ -1177,6 +1196,52 @@ function judgeSingle() {
   toast(listed || !getQuestions().length ? "判定完成，见下方结果卡" : "判定完成。这个问题不在 Step 2 的问题清单里，测试矩阵不会显示它，可以把原话加进清单");
 }
 
+// 导入回答存档表：文件只在本机浏览器里读，不上传。同一分享链接导入过就跳过，重复导入不会多出记录
+function importArchive(input) {
+  const file = input.files && input.files[0];
+  input.value = "";   // 同一个文件改完可以再选一次
+  if (!file) return;
+  const cfg = getConfig(); if (!cfg) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const engines = [...document.getElementById("engine").options].map(o => o.value);
+    const { items, skipped, error } = archiveToInputs(parseCSV(reader.result), engines);
+    if (error) { alert("这个文件导入不了：" + error); return; }
+    const seen = new Set(queue.map(r => r.shareUrl).filter(Boolean));
+    let added = 0;
+    items.forEach((it, i) => {
+      if (it.shareUrl && seen.has(it.shareUrl)) { skipped.push({ ...it, reason: "导入过了" }); return; }
+      seen.add(it.shareUrl);
+      // 正文再走一遍单条粘贴时的引擎清理（ChatGPT 末尾的问卷、「如果你愿意，我可以」追问等），两种方式判出来口径一致。
+      // 存档表里 ChatGPT 问卷的选项之间有空行，先合掉空行，问卷才认得出来
+      const sp = autoSplit(it.engine === "ChatGPT" ? it.body.replace(/\n[ \t]*\n/g, "\n") : it.body, it.engine);
+      const a = analyze(sp.body, cfg, [it.retrieval, sp.retrieval].filter(x => x && x.trim()).join("\n"), it.citeUrls);
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      // 时间记回答日期（存档表里的「日期」），优化前/后对比按它分；没有日期就记导入时间
+      const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(it.date);
+      const ts = m ? new Date(+m[1], +m[2] - 1, +m[3], 12, 0, 0).getTime() + i * 1000 : Date.now() + i;
+      const qid = matchQuestion(it.question) || it.question;
+      sessionPreviews[id] = a.previewHtml;
+      queue.push({ id, ts, qid, note: it.question, engine: it.engine, ...a,
+        shareUrl: it.shareUrl, tier: it.tier, round: it.round, imported: true });
+      added++;
+    });
+    renderAll();
+    renderImportReport(file.name, added, skipped);
+    if (queue.length > MAX_RECORDS) toast(`记录超过 ${MAX_RECORDS} 条，本机只保留最近 ${MAX_RECORDS} 条，先导出 CSV`);
+    else toast(`导入 ${added} 条，跳过 ${skipped.length} 条`);
+  };
+  reader.onerror = () => alert("文件读取失败，换个文件再试");
+  reader.readAsText(file, "utf-8");
+}
+function renderImportReport(name, added, skipped) {
+  const box = document.getElementById("importReport");
+  const short = q => q.length > 40 ? q.slice(0, 40) + "…" : q;
+  const list = skipped.map(s => `<li>第 ${s.line} 行 · ${escapeHtml(s.engine || "—")} · ${escapeHtml(s.question ? short(s.question) : "（没写问题）")}${s.round ? " · 第 " + escapeHtml(s.round) + " 次" : ""}：${escapeHtml(s.reason)}</li>`).join("");
+  box.innerHTML = `<div class="import-report"><b>${escapeHtml(name)}</b>：导入并判定 ${added} 条${skipped.length ? `，跳过 ${skipped.length} 条` : ""}。${added ? "结果见下方汇总记分卡和测试记录。" : ""}`
+    + (skipped.length ? `<details style="margin-top:6px"><summary>跳过了哪些</summary><ul>${list}</ul><div class="hint">「要人打开看」的回答，打开分享链接核对后，可以按单条方式粘进来判。</div></details>` : "") + `</div>`;
+}
+
 // 状态 → 结果卡的图标 / 配色 / 大白话解释
 function statusMeta(s, engine) {
   const eng = engine || "ChatGPT";
@@ -1299,12 +1364,13 @@ function clearQueue() {
   }
 }
 
-const ROW_HEADER = ["备注", "引擎", "状态", "品牌提及", "仅被引", "检索层命中", "出现位置", "被引官网链接", "竞品出现顺序", "命中原文片段", "时间", "问题", "引用来源链接", "负面提及"];
+const ROW_HEADER = ["备注", "引擎", "状态", "品牌提及", "仅被引", "检索层命中", "出现位置", "被引官网链接", "竞品出现顺序", "命中原文片段", "时间", "问题", "引用来源链接", "负面提及", "分享链接", "档位", "第几次"];  // 后三列是导入存档表时带进来的，单条粘贴的记录为空
 function rowFields(q, urlSep) {
   urlSep = urlSep || " ";
   return [q.note, (q.engine || "ChatGPT"), q.status, q.mentioned, q.citedOnly, (q.hasRetrieval ? q.retrievalHit : ""),
     posText(q), q.brandUrls.join(urlSep), compOrderText(q), q.brandSnippet,
-    fmtTime(q.ts), (q.qid || ""), (q.sources || []).map(s => s.url).join(urlSep), (q.negative ? "是" : "")];
+    fmtTime(q.ts), (q.qid || ""), (q.sources || []).map(s => s.url).join(urlSep), (q.negative ? "是" : ""),
+    (q.shareUrl || ""), (q.tier || ""), (q.round || "")];
 }
 function copyAll() {
   if (!queue.length) { alert("队列为空"); return; }
@@ -1554,6 +1620,70 @@ function computeSources(records, cfg) {
   return Object.values(rows)
     .map(r => ({ host: r.host, count: r.count, engines: [...r.engines], examples: [...r.urlSet].slice(0, 3), tag: r.tag }))
     .sort((a, b) => b.count - a.count);
+}
+
+// ===== 导入回答存档表（CSV）=====
+// 存档表一行一条回答，列：问题原文、平台、档位、第几次、日期、回答正文、来源列表、分享链接、取数状态（、原始数据文件、搜索词）。
+// 来源列表一行一条「标题 | 域名 | 链接」，AI 在正文里用角标引用的那条行尾多一个「| 正文引用」。
+// RFC 4180：带引号的格子里可以有逗号、换行和 "" 转义；开头的 BOM 去掉
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = "", quoted = false;
+  text = String(text).replace(/^﻿/, "");
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (quoted) {
+      if (ch === '"' && text[i + 1] === '"') { field += '"'; i++; }
+      else if (ch === '"') quoted = false;
+      else field += ch;
+    } else if (ch === '"') quoted = true;
+    else if (ch === ",") { row.push(field); field = ""; }
+    else if (ch === "\n" || ch === "\r") {
+      if (ch === "\r" && text[i + 1] === "\n") i++;
+      row.push(field); rows.push(row); row = []; field = "";
+    } else field += ch;
+  }
+  if (field !== "" || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.some(v => v.trim() !== ""));
+}
+const ARCHIVE_REQUIRED = ["问题原文", "平台", "回答正文", "来源列表", "取数状态"];
+// 正文里不算"点名"的部分：引用角标「（来源：飞书）」（站点名常常就是品牌名）、搜索带出来的视频和配图说明
+const ARCHIVE_CITE_MARK = /（来源：[^）]*）/g;
+const ARCHIVE_MEDIA_LINE = /\[(视频卡片|图片)[：，][^\]]*\]/g;   // 视频说明可能跨好几行，按方括号整块剔
+// 表格行 → 判定输入。engines 是判定助手支持的引擎名；返回 { items, skipped, error }
+function archiveToInputs(rows, engines) {
+  if (!rows.length) return { items: [], skipped: [], error: "文件是空的" };
+  const head = rows[0].map(h => h.trim());
+  const miss = ARCHIVE_REQUIRED.filter(c => head.indexOf(c) === -1);
+  if (miss.length) return { items: [], skipped: [], error: "缺少列：" + miss.join("、") + "。要用回答存档表的原文件，第一行是表头。" };
+  const col = name => head.indexOf(name);
+  const get = (r, name) => (col(name) === -1 ? "" : (r[col(name)] || "")).trim();
+  const items = [], skipped = [];
+  rows.slice(1).forEach((r, i) => {
+    const it = { line: i + 2, question: get(r, "问题原文"), engine: get(r, "平台"), round: get(r, "第几次"),
+      tier: get(r, "档位"), date: get(r, "日期"), shareUrl: get(r, "分享链接") };
+    const status = get(r, "取数状态");
+    if (status !== "成功") { skipped.push({ ...it, reason: status || "取数状态是空的" }); return; }
+    if (engines.indexOf(it.engine) === -1) { skipped.push({ ...it, reason: "判定助手还不支持这个平台" }); return; }
+    if (!it.question) { skipped.push({ ...it, reason: "问题原文是空的" }); return; }
+    const answer = (col("回答正文") === -1 ? "" : r[col("回答正文")] || "");
+    if (!answer.trim()) { skipped.push({ ...it, reason: "回答正文是空的" }); return; }
+    const citeUrls = [], retLines = [];
+    for (const line of get(r, "来源列表").split(/\r?\n/)) {
+      if (!line.trim()) continue;
+      const parts = line.split(" | ");
+      const url = (parts.find(p => /^https?:\/\//.test(p.trim())) || "").trim();
+      if (parts[parts.length - 1].trim() === "正文引用" && url) citeUrls.push(url);
+      retLines.push(line);
+    }
+    it.body = answer.replace(ARCHIVE_CITE_MARK, "").replace(ARCHIVE_MEDIA_LINE, "").replace(/\n{3,}/g, "\n\n").trim();
+    // 搜索词（选填列，一行一个）也是检索层：AI 搜过品牌名，就算被检索到
+    for (const q of get(r, "搜索词").split(/\r?\n/)) if (q.trim()) retLines.push("搜索词：" + q.trim());
+    it.retrieval = retLines.join("\n");
+    it.citeUrls = citeUrls;
+    items.push(it);
+  });
+  return { items, skipped, error: "" };
 }
 /* ===== PURE-END ===== */
 
