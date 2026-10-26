@@ -63,7 +63,7 @@ node tools/to-citation-evidence.js geo_judge_results.csv --context
 
 ## 批量判：导入回答存档表
 
-已经把一批回答整理成「回答存档表」（CSV，一行一条回答）的，不用一条条粘：
+已经把一批回答整理成「回答存档表」（CSV，一行一条回答）的，不用一条条粘。存档表可以用 [ai-answer-archive](https://github.com/jiguang9/ai-answer-archive) 从豆包、ChatGPT、DeepSeek 的分享链接直接生成，它还能把判定结果合成一份可交付的原始记录索引。
 
 - **网页上**：Step 3 顶部点「导入存档表（CSV）」，选文件，每行判一条。文件只在浏览器里读，不上传。
 - **命令行**：判定逻辑和网页是同一份（脚本运行时直接从 `index.html` 里读判定代码），结果和网页「下载 CSV」逐字节一致。
