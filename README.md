@@ -61,9 +61,26 @@ node tools/to-citation-evidence.js geo_judge_results.csv --context
 
 同一个问题在同一个引擎上测了多次，每次都会各自转成一条记录。
 
+## 批量判：导入回答存档表
+
+已经把一批回答整理成「回答存档表」（CSV，一行一条回答）的，不用一条条粘：
+
+- **网页上**：Step 3 顶部点「导入存档表（CSV）」，选文件，每行判一条。文件只在浏览器里读，不上传。
+- **命令行**：判定逻辑和网页是同一份（脚本运行时直接从 `index.html` 里读判定代码），结果和网页「下载 CSV」逐字节一致。
+
+```bash
+node tools/judge-archive.js 回答存档表.csv \
+  --brand "飞书, Feishu, Lark" --domain feishu.cn \
+  --competitors "钉钉|DingTalk, 企业微信|WeCom" -o geo_judge_results.csv
+```
+
+存档表第一行是表头。必须有 `问题原文` `平台` `回答正文` `来源列表` `取数状态`，可选 `档位` `第几次` `日期` `分享链接` `搜索词`。平台写 ChatGPT、DeepSeek、豆包这类页面上能选的名字。来源列表一行一条 `标题 | 域名 | 链接`，AI 在正文里用角标引用的，行尾加 `| 正文引用`；搜索词一行一个。只判取数状态是「成功」的行，其余照实列出原因。
+
+判法和单条粘贴一样，另外：正文里写成「（来源：站点名）」的引用角标、`[视频卡片：…]` `[图片：…]` 不算正文点名；来源列表和搜索词进检索层；标了「正文引用」的来源算引用层。导入的记录「出现位置」按回答的 Markdown 结构算，和单条粘贴（页面文字）口径不完全一样，同一批数据别混着比。
+
 ## 局限
 
-- 这是单条判定工具，没有对接任何 AI 引擎的接口，不会帮你自动去问；问题要你自己去各个引擎问，再把回答粘回来
+- 没有对接任何 AI 引擎的接口，不会帮你自动去问；问题要你自己去各个引擎问，再把回答粘回来，或整理成回答存档表批量导入
 - AI 的回答本身会波动，一次结果只代表那一刻；同一个问题建议隔天再测几次，再看汇总
 - 匹配规则基于品牌名和官网域名的文本匹配，品牌名是常见词时可能误判，填竞品和别名时尽量具体
 - 各引擎界面改得勤，页面里的复制说明以 2026 年 10 月的界面为准
@@ -73,7 +90,8 @@ node tools/to-citation-evidence.js geo_judge_results.csv --context
 ```
 index.html                      判定助手本体（单文件，打开即用）
 tools/to-citation-evidence.js   CSV → geo-audit citationEvidence
-tests/                          转换脚本的测试（npm test）
+tools/judge-archive.js          命令行批量判回答存档表（判定代码从 index.html 读）
+tests/                          两个脚本的测试（npm test）
 scripts/sync-from-site.py       从官网版重新生成 index.html
 ```
 

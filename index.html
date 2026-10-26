@@ -743,7 +743,6 @@ details summary { cursor: pointer; font-size: 12px; color: var(--amber); font-we
 
 <script>
 const queue = [];
-const urlReg = /https?:\/\/[^\s"'<>()\[\],，。；;]+/g;
 
 /* ===== STORAGE-BEGIN ===== */
 const STORE_KEY = "aml_geo_judge_v1";
@@ -803,6 +802,10 @@ function initFromStore() {
 }
 /* ===== STORAGE-END ===== */
 
+/* ===== CORE-BEGIN ===== */
+// 判定核心：从这里到 CORE-END 都不碰页面元素。geo-judge 仓库的命令行脚本（tools/judge-archive.js）
+// 直接从 index.html 里取这一块和下面的 PURE 块来跑，网页和命令行用的是同一份判定逻辑，改这里两边一起变。
+const urlReg = /https?:\/\/[^\s"'<>()\[\],，。；;]+/g;
 function splitList(s) { return s.split(",").map(x => x.trim()).filter(Boolean); }
 function escapeHtml(s) { return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 
@@ -1029,20 +1032,24 @@ function chatgptClean(lines, ret) {
   return out;
 }
 
-function getConfigSilent() {
-  const brandRaw = splitList(document.getElementById("brand").value);
+// 品牌、官网域名、竞品三栏的原文 → 判定用的配置；品牌没填返回 null
+function buildConfig(brand, brandDomain, competitors) {
+  const brandRaw = splitList(brand || "");
   if (!brandRaw.length) return null;
-  const domainRaw = document.getElementById("brandDomain").value.trim().replace(/^https?:\/\//i, "").replace(/^www\./i, "");
+  const domainRaw = String(brandDomain || "").trim().replace(/^https?:\/\//i, "").replace(/^www\./i, "");
   return {
     brandRaw,
     brandName: brandRaw[0],
     brandNeedles: brandRaw.flatMap(expandVariant),
     brandDomain: normalizeText(domainRaw),
-    compGroups: splitList(document.getElementById("competitors").value).map(g => {
+    compGroups: splitList(competitors || "").map(g => {
       const variants = g.split("|").map(x => x.trim()).filter(Boolean);
       return { name: variants[0] || g.trim(), needles: variants.flatMap(expandVariant) };
     }),
   };
+}
+function getConfigSilent() {
+  return buildConfig(document.getElementById("brand").value, document.getElementById("brandDomain").value, document.getElementById("competitors").value);
 }
 function getConfig() {
   const cfg = getConfigSilent();
@@ -1154,6 +1161,52 @@ function analyze(text, cfg, retrievalText, citeUrls) {
   };
 }
 
+// 存档表里的一条（archiveToInputs 的输出）→ 判定结果。正文先走一遍单条粘贴时的引擎清理
+// （ChatGPT 末尾的问卷、「如果你愿意，我可以」追问等），两种方式判出来口径一致；
+// 存档表里 ChatGPT 问卷的选项之间有空行，先合掉空行，问卷才认得出来
+function judgeArchiveItem(it, cfg) {
+  const sp = autoSplit(it.engine === "ChatGPT" ? it.body.replace(/\n[ \t]*\n/g, "\n") : it.body, it.engine);
+  return analyze(sp.body, cfg, [it.retrieval, sp.retrieval].filter(x => x && x.trim()).join("\n"), it.citeUrls);
+}
+// 回答日期（YYYY-MM-DD）→ 记录时间戳：当天正午，同一批按顺序错开 1 秒；没有日期返回 null
+function archiveTs(date, i) {
+  const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(date || "");
+  return m ? new Date(+m[1], +m[2] - 1, +m[3], 12, 0, 0).getTime() + (i || 0) * 1000 : null;
+}
+
+// 导出：测试记录 → 表格行 / CSV（网页「下载 CSV」和命令行脚本共用）
+function posText(q) {
+  if (q.mentioned !== "是") return "—";
+  if (q.isList) {
+    const ord = q.ordCell.split("/")[0];
+    return ord === "—" ? ("在列表里，但不在编号项内（共 " + q.listTotal + " 项）") : ("编号列表里排第 " + ord + " / 共 " + q.listTotal + " 个");
+  }
+  return "正文" + q.posLabel + "（约 " + q.posDetail + "）";
+}
+function compOrderText(q) {
+  if (!q.comps.length) return "（没发现你填的竞品）";
+  return q.comps.map((c, i) => (i + 1) + ". " + c.name + (c.count > 1 ? " ×" + c.count : "")).join("　");
+}
+function fmtTime(ts) {
+  if (!ts) return "—";
+  const d = new Date(ts);
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getMonth()+1}-${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+const ROW_HEADER = ["备注", "引擎", "状态", "品牌提及", "仅被引", "检索层命中", "出现位置", "被引官网链接", "竞品出现顺序", "命中原文片段", "时间", "问题", "引用来源链接", "负面提及", "分享链接", "档位", "第几次"];  // 后三列是导入存档表时带进来的，单条粘贴的记录为空
+function rowFields(q, urlSep) {
+  urlSep = urlSep || " ";
+  return [q.note, (q.engine || "ChatGPT"), q.status, q.mentioned, q.citedOnly, (q.hasRetrieval ? q.retrievalHit : ""),
+    posText(q), q.brandUrls.join(urlSep), compOrderText(q), q.brandSnippet,
+    fmtTime(q.ts), (q.qid || ""), (q.sources || []).map(s => s.url).join(urlSep), (q.negative ? "是" : ""),
+    (q.shareUrl || ""), (q.tier || ""), (q.round || "")];
+}
+function toCSV(records) {
+  const esc = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+  return "\uFEFF" + [ROW_HEADER, ...records.map(q => rowFields(q, "\n"))].map(r => r.map(esc).join(",")).join("\n");
+}
+/* ===== CORE-END ===== */
+
 function judgeSingle() {
   const cfg = getConfig(); if (!cfg) return;
   const engine = document.getElementById("engine").value;
@@ -1212,14 +1265,10 @@ function importArchive(input) {
     items.forEach((it, i) => {
       if (it.shareUrl && seen.has(it.shareUrl)) { skipped.push({ ...it, reason: "导入过了" }); return; }
       seen.add(it.shareUrl);
-      // 正文再走一遍单条粘贴时的引擎清理（ChatGPT 末尾的问卷、「如果你愿意，我可以」追问等），两种方式判出来口径一致。
-      // 存档表里 ChatGPT 问卷的选项之间有空行，先合掉空行，问卷才认得出来
-      const sp = autoSplit(it.engine === "ChatGPT" ? it.body.replace(/\n[ \t]*\n/g, "\n") : it.body, it.engine);
-      const a = analyze(sp.body, cfg, [it.retrieval, sp.retrieval].filter(x => x && x.trim()).join("\n"), it.citeUrls);
+      const a = judgeArchiveItem(it, cfg);
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
       // 时间记回答日期（存档表里的「日期」），优化前/后对比按它分；没有日期就记导入时间
-      const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(it.date);
-      const ts = m ? new Date(+m[1], +m[2] - 1, +m[3], 12, 0, 0).getTime() + i * 1000 : Date.now() + i;
+      const ts = archiveTs(it.date, i) || Date.now() + i;
       const qid = matchQuestion(it.question) || it.question;
       sessionPreviews[id] = a.previewHtml;
       queue.push({ id, ts, qid, note: it.question, engine: it.engine, ...a,
@@ -1253,18 +1302,6 @@ function statusMeta(s, engine) {
 }
 function statusCls(s) { return s === "正文提及" ? "yes" : (s === "未出现" ? "no" : ""); }
 
-function posText(q) {
-  if (q.mentioned !== "是") return "—";
-  if (q.isList) {
-    const ord = q.ordCell.split("/")[0];
-    return ord === "—" ? ("在列表里，但不在编号项内（共 " + q.listTotal + " 项）") : ("编号列表里排第 " + ord + " / 共 " + q.listTotal + " 个");
-  }
-  return "正文" + q.posLabel + "（约 " + q.posDetail + "）";
-}
-function compOrderText(q) {
-  if (!q.comps.length) return "（没发现你填的竞品）";
-  return q.comps.map((c, i) => (i + 1) + ". " + c.name + (c.count > 1 ? " ×" + c.count : "")).join("　");
-}
 
 function renderResultCard(q) {
   const m = statusMeta(q.status, q.engine);
@@ -1296,12 +1333,6 @@ function toggleNegative(id, on) {
   toast(on ? "已标为负面提及" : "已取消负面提及标记");
 }
 
-function fmtTime(ts) {
-  if (!ts) return "—";
-  const d = new Date(ts);
-  const p = n => String(n).padStart(2, "0");
-  return `${d.getMonth()+1}-${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`;
-}
 function renderQueue() {
   const tb = document.querySelector("#qTable tbody");
   tb.innerHTML = queue.map((q, i) => {
@@ -1364,14 +1395,6 @@ function clearQueue() {
   }
 }
 
-const ROW_HEADER = ["备注", "引擎", "状态", "品牌提及", "仅被引", "检索层命中", "出现位置", "被引官网链接", "竞品出现顺序", "命中原文片段", "时间", "问题", "引用来源链接", "负面提及", "分享链接", "档位", "第几次"];  // 后三列是导入存档表时带进来的，单条粘贴的记录为空
-function rowFields(q, urlSep) {
-  urlSep = urlSep || " ";
-  return [q.note, (q.engine || "ChatGPT"), q.status, q.mentioned, q.citedOnly, (q.hasRetrieval ? q.retrievalHit : ""),
-    posText(q), q.brandUrls.join(urlSep), compOrderText(q), q.brandSnippet,
-    fmtTime(q.ts), (q.qid || ""), (q.sources || []).map(s => s.url).join(urlSep), (q.negative ? "是" : ""),
-    (q.shareUrl || ""), (q.tier || ""), (q.round || "")];
-}
 function copyAll() {
   if (!queue.length) { alert("队列为空"); return; }
   // TSV 剪贴板没有引号转义，多个链接必须用空格连接，用换行会被 Excel/表格软件当成新的一行导致错位
@@ -1380,9 +1403,7 @@ function copyAll() {
 }
 function downloadCSV() {
   if (!queue.length) { alert("队列为空"); return; }
-  const header = ROW_HEADER;
-  const esc = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
-  const csv = "\uFEFF" + [header, ...queue.map(q => rowFields(q, "\n"))].map(r => r.map(esc).join(",")).join("\n");
+  const csv = toCSV(queue);
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
